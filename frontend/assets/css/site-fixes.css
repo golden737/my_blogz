@@ -1,0 +1,14 @@
+:focus-visible{outline:3px solid #e5233270;outline-offset:3px}
+.icon-btn{width:40px;height:40px;display:inline-grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:var(--surface);font-size:20px;transition:background .2s,color .2s}
+.icon-btn:hover{background:var(--soft);color:var(--red)}
+.header-actions{flex-shrink:0}
+.admin-source-link{width:max-content;max-width:100%;color:var(--red);font-size:11px;font-weight:700;overflow-wrap:anywhere}
+.admin-source-link:hover{text-decoration:underline}
+.admin-list-item form{flex-shrink:0}
+.admin-list-copy{flex:1}
+.flash{position:relative;z-index:5;max-width:1320px;margin:14px auto 0;padding:13px 18px;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.flash-success{background:#effaf4;color:#146c43;border-color:#bde5cc}
+.flash-error{background:#fff2f1;color:#a11b28;border-color:#f2c6c3}
+@media(max-width:900px){.flash{margin:12px 4% 0}}
+@media(max-width:650px){.header-actions{gap:6px}.header-actions .icon-btn{display:inline-grid;width:34px;height:34px;font-size:17px}.admin-list-item{align-items:flex-start;flex-wrap:wrap}.admin-list-copy{flex-basis:calc(100% - 90px)}.admin-list-copy+.button{margin-left:auto}.header-actions .button-small{padding:8px 10px;font-size:10px}.header-actions .text-button{padding:8px 2px;font-size:10px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

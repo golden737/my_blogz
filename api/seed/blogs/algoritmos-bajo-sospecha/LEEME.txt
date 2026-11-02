@@ -1,0 +1,10 @@
+BLOG: Algoritmos bajo sospecha
+Autora indicada en el PDF: Cesia Campos
+
+INSTALACIÓN:
+1. Sube este ZIP desde el panel de My Blogs.
+2. El ZIP incluye index.html en la raíz, styles.css y las páginas del PDF en assets/pages/.
+3. Se generó a partir del PDF proporcionado, ya que el enlace de Canva redirige a una página de edición que no se pudo consultar directamente.
+
+NOTA:
+Las páginas se incluyen como imágenes para conservar el aspecto del documento exportado. La tipografía decorativa utiliza Google Fonts si hay conexión a Internet; el contenido principal no depende de ella.
