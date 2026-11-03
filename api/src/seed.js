@@ -10,14 +10,20 @@ const blogs = [
   { title: 'Algoritmos bajo sospecha', slug: 'algoritmos-bajo-sospecha', description: 'El sesgo de la inteligencia artificial en el empleo.', author_name: 'Cesia Campos', original_url: '', categories: ['tecnologia'], folder: 'algoritmos-bajo-sospecha', cover: 'assets/pages/pagina-01.jpg', published_at: '2026-06-13' },
   { title: 'El impacto cultural de BTS', slug: 'el-impacto-cultural-de-bts', description: 'La campaña Love Myself, la salud mental y el impacto cultural de BTS.', author_name: 'Keyri Gámez', original_url: '', categories: ['musica'], folder: 'el-impacto-cultural-de-bts', cover: 'cover.jpg', published_at: '2026-06-13' },
   { title: 'Pensamiento crítico', slug: 'pensamiento-critico', description: 'El pensamiento crítico en la sociedad contemporánea.', author_name: 'Paola Abrego', original_url: 'https://tecnologiapensamientocritico2026.blogspot.com/', categories: ['educacion'], folder: 'pensamiento-critico', cover: 'cover.jpg', published_at: '2026-06-15' },
-  { title: 'Las vaquitas marinas necesitan tu ayuda', slug: 'vaquitas-marinas', description: 'La conservación de la vaquita marina y las amenazas que enfrenta.', author_name: 'Deysi Ramos', original_url: 'https://lasvaquitasmarinasnecesitantuayuda.blogspot.com/', cover_image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhOCxRcJaXLc0-T6jiKgZwlACM5jlz8ffjkzP41nZQKNz9t0OUM4t1ocp3RTb8cfGOc_UtL4JdfIPeVidlaS1Z4OvUEWN4BgqxpQRM5dksickEPnuRZZ3gg25ooGu7Zh3kVUKNvQXsPNhc7MTquAMmdkZXWrQNRMuiyk5e-8C83eA0LkjKF0H-r6o_QX9M/s960/Vaquita6_Olson_NOAA.jpg', categories: ['otros'], folder: 'vaquitas-marinas', cover: 'cover.jpg', published_at: '2026-06-13' },
-  { title: 'Raíces sin tierra', slug: 'raices-sin-tierra', description: 'La cultura salvadoreña y las raíces silenciadas durante el Martinato.', author_name: '', original_url: 'https://raicessintierra.blogspot.com/', cover_image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgioIf9OEx6ku9hLSCUXNh7MU6z6jBTa_iAwmqnNPxvxXG2LBw9wsa8U6mr3fQfMYsUD7yIdvbcVmjIawc427bD1JWRCrMN6HBuoR7xt_QmXD_Xf3NqpX_V6FEI5mBo17tye0_qUujV7YYzj2W9rHtw9t5ScuQXEanwnrZtD5k87kHSqWquCqVH-d-ajW8/s800/El-Salvador.jpg', categories: ['educacion'], folder: 'raices-sin-tierra', published_at: '2026-06-14' },
-  { title: 'El rugido del clima', slug: 'el-rugido-del-clima', description: 'Cómo el calentamiento global intensifica los fenómenos meteorológicos extremos.', author_name: 'Mayra Gómez', original_url: 'https://mayragomez1218.blogspot.com/', cover_image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhD73bCTR0AU-ghbD-cNuRu_5MC58rm0V2s7F8ySONpDH5W08sikgOheJHTc4Da1l74NW-7DKfX-OHUl-9RRLtrcbKURKqSz3TEe-3r3qUTamkD48iw64cvrDHvuqQ-gbnumkpaBv6zhPaH4h-7AMkNE2KoduoI7z2xCw3waKolH-tuVgxbZPKp8qx3otRH/s1408/Gemini_Generated_Image_ze3k1wze3k1wze3k.png', categories: ['otros'], folder: 'el-rugido-del-clima', cover: 'cover.jpg', published_at: '2026-06-13' },
-  { title: 'I(nteligencia) A(utónoma) en 5 Minutos', slug: 'ia-en-5-minutos', description: 'Inteligencia artificial en el sistema educativo salvadoreño.', author_name: 'Eduardo Romero', original_url: 'https://iaen5minutos.blogspot.com/', categories: ['tecnologia'], folder: 'ia-en-5-minutos', cover: 'cover.jpg', published_at: '2026-06-13' },
+  { title: 'Las vaquitas marinas necesitan tu ayuda', slug: 'vaquitas-marinas', description: 'La conservación de la vaquita marina y las amenazas que enfrenta.', author_name: 'Deysi Ramos', original_url: 'https://lasvaquitasmarinasnecesitantuayuda.blogspot.com/', categories: ['otros'], folder: 'vaquitas-marinas', cover: 'cover.svg', published_at: '2026-06-13' },
+  { title: 'Raíces sin tierra', slug: 'raices-sin-tierra', description: 'La cultura salvadoreña y las raíces silenciadas durante el Martinato.', author_name: '', original_url: 'https://raicessintierra.blogspot.com/', categories: ['educacion'], folder: 'raices-sin-tierra', cover: 'cover.svg', published_at: '2026-06-14' },
+  { title: 'El rugido del clima', slug: 'el-rugido-del-clima', description: 'Cómo el calentamiento global intensifica los fenómenos meteorológicos extremos.', author_name: 'Mayra Gómez', original_url: 'https://mayragomez1218.blogspot.com/', categories: ['otros'], folder: 'el-rugido-del-clima', cover: 'cover.svg', published_at: '2026-06-13' },
+  { title: 'I(nteligencia) A(utónoma) en 5 Minutos', slug: 'ia-en-5-minutos', description: 'Inteligencia artificial en el sistema educativo salvadoreño.', author_name: 'Eduardo Romero', original_url: 'https://iaen5minutos.blogspot.com/', categories: ['tecnologia'], folder: 'ia-en-5-minutos', cover: 'cover.svg', published_at: '2026-06-13' },
   { title: 'Educación de computación cuántica', slug: 'educacion-computacion-cuantica', description: 'La educación en computación cuántica y su integración gradual en las universidades.', author_name: 'Fredy Gutiérrez', original_url: 'https://fredygutierrezc2.blogspot.com/', categories: ['tecnologia', 'educacion'], folder: 'educacion-computacion-cuantica', cover: 'cover.jpg', published_at: '2026-06-13' },
   { title: 'The Academic Blog', slug: 'the-academic-blog', description: 'Protección de la privacidad de los usuarios ante el avance de la inteligencia artificial.', author_name: '', original_url: 'https://exelyntheacademy.blogspot.com/', categories: ['tecnologia'], folder: 'the-academic-blog', cover: 'cover.jpg', published_at: '2026-06-13' },
   { title: 'El impacto de la IA aplicada a la logística y aduanas', slug: 'ia-aplicada-logistica-aduanas', description: 'La inteligencia artificial aplicada a la logística y las aduanas.', author_name: '', original_url: 'https://elvismerazlogistica.blogspot.com/', categories: ['tecnologia'], folder: 'ia-aplicada-logistica-aduanas', cover: 'cover.jpg', published_at: '2026-06-13' }
 ];
+
+const obsoleteCoverUrls = {
+  'raices-sin-tierra': 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgioIf9OEx6ku9hLSCUXNh7MU6z6jBTa_iAwmqnNPxvxXG2LBw9wsa8U6mr3fQfMYsUD7yIdvbcVmjIawc427bD1JWRCrMN6HBuoR7xt_QmXD_Xf3NqpX_V6FEI5mBo17tye0_qUujV7YYzj2W9rHtw9t5ScuQXEanwnrZtD5k87kHSqWquCqVH-d-ajW8/s800/El-Salvador.jpg',
+  'vaquitas-marinas': 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhOCxRcJaXLc0-T6jiKgZwlACM5jlz8ffjkzP41nZQKNz9t0OUM4t1ocp3RTb8cfGOc_UtL4JdfIPeVidlaS1Z4OvUEWN4BgqxpQRM5dksickEPnuRZZ3gg25ooGu7Zh3kVUKNvQXsPNhc7MTquAMmdkZXWrQNRMuiyk5e-8C83eA0LkjKF0H-r6o_QX9M/s960/Vaquita6_Olson_NOAA.jpg',
+  'el-rugido-del-clima': 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhD73bCTR0AU-ghbD-cNuRu_5MC58rm0V2s7F8ySONpDH5W08sikgOheJHTc4Da1l74NW-7DKfX-OHUl-9RRLtrcbKURKqSz3TEe-3r3qUTamkD48iw64cvrDHvuqQ-gbnumkpaBv6zhPaH4h-7AMkNE2KoduoI7z2xCw3waKolH-tuVgxbZPKp8qx3otRH/s1408/Gemini_Generated_Image_ze3k1wze3k1wze3k.png'
+};
 
 async function walkFiles(dir, prefix = '') {
   const files = [];
@@ -43,6 +49,13 @@ export async function seedPackagedBlogs() {
       const found = inserted.rows[0]
         ? inserted.rows[0]
         : (await client.query('SELECT id FROM blogs WHERE slug=$1', [item.slug])).rows[0];
+      const obsoleteCoverUrl = obsoleteCoverUrls[item.slug];
+      if (obsoleteCoverUrl) {
+        await client.query(
+          'UPDATE blogs SET cover_image=NULL WHERE id=$1 AND cover_image=$2',
+          [found.id, obsoleteCoverUrl]
+        );
+      }
       if (item.cover_image) {
         await client.query(
           `UPDATE blogs SET cover_image=$1 WHERE id=$2 AND COALESCE(cover_image,'')=''`,

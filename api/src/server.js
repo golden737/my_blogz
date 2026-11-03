@@ -106,9 +106,10 @@ function parseCategoryIds(value) {
 function coverData(req, blog) {
   const apiBase = `${req.protocol}://${req.get('host')}`;
   const localPath = blog.local_cover_path;
-  const coverUrl = blog.cover_image || (localPath
+  const localUrl = localPath
     ? `${apiBase}/api/blog-files/${encodeURIComponent(blog.slug)}/${localPath.split('/').map(encodeURIComponent).join('/')}`
-    : '');
+    : '';
+  const coverUrl = blog.cover_image || localUrl;
   return { cover_url: coverUrl, cover_fit: Boolean(localPath?.endsWith('.svg') || localPath?.startsWith('assets/pages/')) };
 }
 
