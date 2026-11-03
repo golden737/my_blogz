@@ -23,6 +23,7 @@
 .search-row .search-form{flex:1;margin:0}
 .empty-note{grid-column:1/-1;border:1px dashed var(--line);border-radius:14px;padding:36px;text-align:center;color:var(--muted)}
 .card-image img{width:100%;height:100%;object-fit:cover}
+.card-image img.cover-fit-contain,.detail-cover.cover-fit-contain{object-fit:contain;background:#f2f0ec}
 .image-placeholder{display:grid;place-items:center;width:100%;height:100%;background:linear-gradient(135deg,#fdebed,#f7f6f3);color:#b92736;font-weight:800}
 .category-picker{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:9px}
 .category-picker legend{padding:0 6px;font-size:12px;font-weight:700;color:var(--text)}

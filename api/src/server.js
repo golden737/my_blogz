@@ -7,11 +7,13 @@ import AdmZip from 'adm-zip';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { pool, initializeDatabase } from './db.js';
 import { seedPackagedBlogs, contentTypeFor } from './seed.js';
 
 const app = express();
 const PORT = Number(process.env.PORT || 10000);
+const frontendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../frontend');
 const JWT_SECRET = process.env.JWT_SECRET;
 const SITE_BASE_URL = process.env.SITE_BASE_URL || 'http://localhost:5500/';
 const allowedOrigins = (process.env.FRONTEND_ORIGIN || 'http://localhost:5500,http://127.0.0.1:5500')
@@ -99,6 +101,15 @@ function parseCategoryIds(value) {
     try { return parseCategoryIds(JSON.parse(value)); } catch { return []; }
   }
   return [];
+}
+
+function coverData(req, blog) {
+  const apiBase = `${req.protocol}://${req.get('host')}`;
+  const localPath = blog.local_cover_path;
+  const coverUrl = blog.cover_image || (localPath
+    ? `${apiBase}/api/blog-files/${encodeURIComponent(blog.slug)}/${localPath.split('/').map(encodeURIComponent).join('/')}`
+    : '');
+  return { cover_url: coverUrl, cover_fit: Boolean(localPath?.startsWith('assets/pages/')) };
 }
 
 function validOptionalHttpUrl(value) {
@@ -219,17 +230,12 @@ app.get('/api/blogs', authenticate, asyncRoute(async (req, res) => {
     SELECT b.id,b.title,b.slug,b.description,b.author_name,b.source_platform,b.original_url,
       b.integration_mode,b.cover_image,b.status,b.is_featured,b.published_at,
       COALESCE(array_agg(DISTINCT c.name) FILTER(WHERE c.id IS NOT NULL),ARRAY[]::text[]) AS category_names,
-      COALESCE((SELECT f.path FROM blog_files f WHERE f.blog_id=b.id AND f.path='cover.jpg'),
-               (SELECT f.path FROM blog_files f WHERE f.blog_id=b.id AND f.content_type LIKE 'image/%' ORDER BY f.path LIMIT 1)) AS local_cover_path
+      (SELECT f.path FROM blog_files f
+       WHERE f.blog_id=b.id AND (f.path='cover.jpg' OR (b.slug='algoritmos-bajo-sospecha' AND f.path='assets/pages/pagina-01.jpg'))
+       ORDER BY CASE WHEN f.path='cover.jpg' THEN 0 ELSE 1 END LIMIT 1) AS local_cover_path
     FROM blogs b LEFT JOIN blog_categories bc ON bc.blog_id=b.id LEFT JOIN categories c ON c.id=bc.category_id
     WHERE ${clauses.join(' AND ')}`, params);
-  const apiBase = `${req.protocol}://${req.get('host')}`;
-  res.json({ blogs: blogs.map(blog => ({
-    ...blog,
-    cover_url: blog.cover_image || (blog.local_cover_path
-      ? `${apiBase}/api/blog-files/${encodeURIComponent(blog.slug)}/${blog.local_cover_path.split('/').map(encodeURIComponent).join('/')}`
-      : '')
-  })) });
+  res.json({ blogs: blogs.map(blog => ({ ...blog, ...coverData(req, blog) })) });
 }));
 
 app.get('/api/blogs/:slug', authenticate, asyncRoute(async (req, res) => {
@@ -237,11 +243,14 @@ app.get('/api/blogs/:slug', authenticate, asyncRoute(async (req, res) => {
   const result = await blogRows(`
     SELECT b.id,b.title,b.slug,b.description,b.author_name,b.source_platform,b.original_url,
       b.integration_mode,b.cover_image,b.status,b.is_featured,b.published_at,
+      (SELECT f.path FROM blog_files f
+       WHERE f.blog_id=b.id AND (f.path='cover.jpg' OR (b.slug='algoritmos-bajo-sospecha' AND f.path='assets/pages/pagina-01.jpg'))
+       ORDER BY CASE WHEN f.path='cover.jpg' THEN 0 ELSE 1 END LIMIT 1) AS local_cover_path,
       COALESCE(array_agg(DISTINCT c.name) FILTER(WHERE c.id IS NOT NULL),ARRAY[]::text[]) AS category_names
     FROM blogs b LEFT JOIN blog_categories bc ON bc.blog_id=b.id LEFT JOIN categories c ON c.id=bc.category_id
     WHERE b.slug=$1 AND b.status='published'`, [req.params.slug]);
   if (!result.length) throw fail(404, 'Blog no encontrado.');
-  res.json({ blog: result[0] });
+  res.json({ blog: { ...result[0], ...coverData(req, result[0]) } });
 }));
 
 app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
@@ -418,6 +427,9 @@ app.delete('/api/admin/users/:id',authenticate,requireRole('super_admin'),asyncR
   if(target.rows[0].role==='super_admin'&&target.rows[0].is_active){const count=await pool.query("SELECT COUNT(*)::int AS count FROM admins WHERE role='super_admin' AND is_active=TRUE");if(count.rows[0].count<2)throw fail(400,'Debe quedar al menos un superadministrador activo.')}
   await pool.query('DELETE FROM admins WHERE id=$1',[id]);res.json({message:'Usuario eliminado.'});
 }));
+
+// Render serves the main app and API from the same public URL.
+app.use(express.static(frontendRoot, { index: 'index.html' }));
 
 app.use((_req,res)=>res.status(404).json({error:'Ruta no encontrada.'}));
 app.use((error,_req,res,_next)=>{

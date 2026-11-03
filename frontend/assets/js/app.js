@@ -3,7 +3,7 @@ const API = String(CONFIG.apiBaseUrl || '').replace(/\/$/, '');
 const SITE = CONFIG.siteBaseUrl || './';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null, blogs: [], categories: [], search: '', category: '', editBlog: null, editUser: null };
+const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null, blogs: [], categories: [], search: '', category: '', editBlog: null, editUser: null, scrollTarget: '' };
 
 function esc(value = '') {
   return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -53,6 +53,7 @@ function headerMode(isSignedIn) {
   $('#siteHeader').hidden = !isSignedIn;
   $('#loginPage').hidden = isSignedIn;
   $('#appPage').hidden = !isSignedIn;
+  $('#adminNavLink').hidden = !isSignedIn || !roleCanEdit();
   if (isSignedIn) $('#userName').textContent = state.user?.name || '';
 }
 function roleCanEdit() { return ['editor', 'super_admin'].includes(state.user?.role); }
@@ -83,7 +84,7 @@ async function loadCatalog(filters = {}) {
 function renderBlogCard(blog) {
   const date = blog.published_at ? new Date(blog.published_at).toLocaleDateString('es-SV', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
   const cover = blog.cover_url
-    ? `<img src="${esc(blog.cover_url)}" alt="Portada de ${esc(blog.title)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>My Blogs</div>'">`
+    ? `<img class="${blog.cover_fit ? 'cover-fit-contain' : ''}" src="${esc(blog.cover_url)}" alt="Portada de ${esc(blog.title)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>My Blogs</div>'">`
     : '<div class="image-placeholder"><span>My Blogs</span></div>';
   return `<article class="blog-card">
     <a class="card-image" href="#/blog/${encodeURIComponent(blog.slug)}">${cover}</a>
@@ -117,6 +118,11 @@ async function renderHome() {
       <div class="blog-grid">${state.blogs.length ? state.blogs.map(renderBlogCard).join('') : '<div class="empty-state"><span>⌕</span><h2>No encontramos blogs</h2><p>Prueba con otra búsqueda o selecciona otra categoría.</p><button class="button" id="showAll">Ver todos los blogs</button></div>'}</div>
       <div class="closing-note"><span></span><b>◧</b><span></span><p>Cada blog es una nueva historia por descubrir</p></div>
     </section>`;
+  if (state.scrollTarget) {
+    const target = document.getElementById(state.scrollTarget);
+    state.scrollTarget = '';
+    requestAnimationFrame(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }
   $('#searchForm').addEventListener('submit', async event => { event.preventDefault(); state.search = new FormData(event.currentTarget).get('q').trim(); state.category = ''; await renderHome(); });
   $$('.category-chip').forEach(button => button.addEventListener('click', async () => { state.category = button.dataset.category; await renderHome(); document.querySelector('#blogs')?.scrollIntoView({ behavior: 'smooth' }); }));
   $('#clearFilter')?.addEventListener('click', async () => { state.search = ''; state.category = ''; await renderHome(); });
@@ -129,7 +135,7 @@ async function renderBlog(slug) {
   const isLocal = blog.integration_mode === 'local';
   $('#viewRoot').innerHTML = `<section class="detail-wrap">
       <a class="back-link" href="#/">← Volver a los blogs</a>
-      ${blog.cover_url ? `<img class="detail-cover" src="${esc(blog.cover_url)}" alt="${esc(blog.title)}">` : ''}
+      ${blog.cover_url ? `<img class="detail-cover ${blog.cover_fit ? 'cover-fit-contain' : ''}" src="${esc(blog.cover_url)}" alt="${esc(blog.title)}">` : ''}
       <div class="detail-content"><span class="tag">${esc((blog.category_names || []).join(', '))}</span><h1>${esc(blog.title)}</h1>
         <div class="detail-meta">${blog.author_name ? `Por ${esc(blog.author_name)} · ` : ''}${esc(blog.source_platform)}</div>
         ${blog.description ? `<p class="detail-description">${esc(blog.description)}</p>` : ''}
@@ -164,13 +170,13 @@ async function renderRoute() {
   const route = location.hash.replace(/^#\/?/, '');
   try {
     if (!route || route === '') { setActiveNav('home'); await renderHome(); }
-    else if (route === 'about') { setActiveNav('about'); if (state.user.role === 'viewer') location.hash = '#/'; else await renderAbout(); }
+    else if (route === 'about') { setActiveNav('about'); await renderAbout(); }
     else if (route.startsWith('blog/')) { setActiveNav('blogs'); await renderBlog(decodeURIComponent(route.slice(5))); }
     else if (route === 'admin' || route.startsWith('admin/')) {
       if (!roleCanEdit()) { location.hash = '#/'; showFlash('Tu cuenta solo puede consultar los blogs.', 'error'); return; }
       const tab = route.split('/')[1] || 'blogs';
       if (tab === 'users' && !roleIsSuper()) { location.hash = '#/admin'; return; }
-      setActiveNav(''); await renderAdmin(tab);
+      setActiveNav('admin'); await renderAdmin(tab);
     } else { location.hash = '#/'; }
   } catch (error) {
     if (error.message !== 'La sesión terminó.') showFlash(error.message, 'error');
@@ -212,8 +218,8 @@ function renderBlogAdmin(blogs, categories) {
         <label>Descripción<textarea name="description" rows="3" placeholder="¿De qué trata este blog?">${esc(editing?.description || '')}</textarea></label>
         <label>Autor<input name="author_name" value="${esc(editing?.author_name || '')}" placeholder="Nombre del autor"><small class="form-help">Este nombre aparecerá en el pie del blog.</small></label>
         <label>URL original<input type="url" name="original_url" value="${esc(editing?.original_url || '')}" placeholder="https://..."></label>
-        <label>ZIP del blog local<input type="file" name="blog_zip" accept=".zip,application/zip"><small class="form-help">Debe contener index.html en la raíz. Hasta 20 MB comprimido y 50 MB descomprimido.${editing ? ' Déjalo vacío para conservar los archivos actuales.' : ''}</small></label>
-        <label>Imagen de portada (opcional)<input type="url" name="cover_image" value="${esc(editing?.cover_image || '')}" placeholder="https://.../portada.jpg"></label>
+        <label>ZIP del blog local<input type="file" name="blog_zip" accept=".zip,application/zip"><small class="form-help">Debe contener index.html en la raíz. Añade cover.jpg en esa misma carpeta para su portada. Hasta 20 MB comprimido y 50 MB descomprimido.${editing ? ' Déjalo vacío para conservar los archivos actuales.' : ''}</small></label>
+        <label>Imagen de portada (opcional)<input type="url" name="cover_image" value="${esc(editing?.cover_image || '')}" placeholder="https://.../portada.jpg"><small class="form-help">Si indicas una URL, se usará en el catálogo. Así no se toma una imagen cualquiera del contenido.</small></label>
         <fieldset class="category-picker"><legend>Categorías</legend>${categories.map(category => `<label class="check-label"><input type="checkbox" name="category_ids" value="${category.id}" ${(editing?.category_ids || []).map(Number).includes(Number(category.id)) ? 'checked' : ''}> ${esc(category.name)}</label>`).join('') || '<small class="form-help">Primero crea una categoría.</small>'}</fieldset>
         <div class="form-two"><label>Plataforma<select name="source_platform">${optionList(['blogger','canva','wordpress','custom','other'], editing?.source_platform || 'other')}</select></label>
           <label>Integración<select name="integration_mode">${optionList(['external','embed','local'], editing?.integration_mode || 'external')}</select></label></div>
@@ -305,7 +311,16 @@ $('#menuToggle').addEventListener('click', () => { const open = $('#mainNav').cl
 $$('#mainNav a').forEach(link => link.addEventListener('click', () => { $('#mainNav').classList.remove('is-open'); $('#menuToggle').setAttribute('aria-expanded','false'); }));
 $$('.main-nav a').forEach(link => link.addEventListener('click', event => {
   const nav = link.dataset.nav;
-  if (nav === 'blogs' || nav === 'categories') { event.preventDefault(); location.hash = '#/'; setTimeout(() => document.getElementById(nav)?.scrollIntoView({ behavior: 'smooth' }), 150); }
+  if (nav === 'blogs' || nav === 'categories') {
+    event.preventDefault();
+    const target = nav === 'blogs' ? 'blogs' : 'categorias';
+    if (location.hash === '#/' || location.hash === '' || location.hash === '#') {
+      document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      state.scrollTarget = target;
+      location.hash = '#/';
+    }
+  }
 }));
 const theme = localStorage.getItem('myblogs-theme'); if (theme === 'dark') document.documentElement.dataset.theme = 'dark';
 $('#themeToggle').addEventListener('click', () => { const dark = document.documentElement.dataset.theme !== 'dark'; document.documentElement.dataset.theme = dark ? 'dark' : 'light'; localStorage.setItem('myblogs-theme', dark ? 'dark' : 'light'); });

@@ -1,6 +1,6 @@
 # My Blogs — GitHub Pages + Render + Neon
 
-Esta versión sustituye el portal PHP/MySQL por una interfaz HTML/CSS/JavaScript en GitHub Pages, una API Node.js/Express en Render y PostgreSQL en Neon.
+Esta versión sustituye el portal PHP/MySQL por una aplicación HTML/CSS/JavaScript y una API Node.js/Express servidas desde Render, con PostgreSQL en Neon. GitHub Pages también puede publicar una copia estática del frontend.
 
 ## Incluye
 
@@ -19,7 +19,7 @@ Esta versión sustituye el portal PHP/MySQL por una interfaz HTML/CSS/JavaScript
 3. El flujo `.github/workflows/pages.yml` publica la carpeta `frontend` cuando se sube un cambio a `main`.
 4. Anota la dirección del sitio. En un repositorio de proyecto suele tener esta forma: `https://USUARIO.github.io/REPOSITORIO/`.
 
-La URL del API se configura después de crear el servicio de Render.
+La URL principal de la aplicación será la de Render. GitHub Pages es opcional y usa la URL del API configurada en `frontend/config.js`.
 
 ## Crear la base de Neon
 
@@ -30,21 +30,20 @@ La URL del API se configura después de crear el servicio de Render.
 
 Al arrancar, Render agrega las diez fichas y sus archivos a Neon y crea el primer superadministrador usando las variables de entorno. No tienes que importar los blogs ni sus imágenes a mano.
 
-## Crear el API en Render
+## Crear My Blogs en Render
 
 1. En Render elige **New → Blueprint** y conecta el mismo repositorio.
-2. Render detectará `render.yaml` y solicitará los valores privados. Configura:
+2. Render detectará `render.yaml`. El servicio ejecuta el API desde `api` y sirve la interfaz desde `frontend`; su URL será la entrada principal de My Blogs.
+3. Completa solo estos valores privados cuando Render los solicite:
    - `DATABASE_URL`: URL pooled de Neon.
-   - `FRONTEND_ORIGIN`: solo el origen de Pages, por ejemplo `https://USUARIO.github.io` (sin el nombre del repositorio).
-   - `SITE_BASE_URL`: URL completa de Pages, por ejemplo `https://USUARIO.github.io/REPOSITORIO/` (con `/` final).
    - `INITIAL_ADMIN_NAME`, `INITIAL_ADMIN_EMAIL` y `INITIAL_ADMIN_PASSWORD`: datos para crear tu cuenta inicial. Usa una contraseña de al menos 12 caracteres.
    - `JWT_SECRET` se genera automáticamente desde el Blueprint; no la publiques ni la copies al frontend.
-3. Cuando Render termine, copia la URL pública del servicio, como `https://myblogs-api.onrender.com`.
-4. Edita `frontend/config.js` y reemplaza `https://YOUR-MYBLOGS-API.onrender.com` por esa URL. Sube el cambio a `main`; GitHub Actions volverá a publicar la interfaz.
+4. El Blueprint ya configura `FRONTEND_ORIGIN` para `https://myblogs-api-e3f9.onrender.com` y `https://golden737.github.io`, y `SITE_BASE_URL` para la URL principal de Render.
+5. Cuando Render termine, abre `https://myblogs-api-e3f9.onrender.com`; allí aparecerá la interfaz de My Blogs.
 
 ## Uso
 
-- Entra al sitio de GitHub Pages con el correo y contraseña iniciales que configuraste en Render.
+- Entra a la URL de Render con el correo y contraseña iniciales que configuraste allí. También puedes usar GitHub Pages si su flujo de publicación está habilitado.
 - El API requiere iniciar sesión para mostrar el catálogo y el panel.
 - Para añadir un blog local, el ZIP debe incluir `index.html` en la raíz. Límite: 20 MB comprimido y 50 MB descomprimido.
 - En **Autor**, escribe el nombre que quieres que aparezca en el pie.
@@ -58,7 +57,7 @@ Al arrancar, Render agrega las diez fichas y sus archivos a Neon y crea el prime
 
 ## Límites del plan gratuito
 
-GitHub Pages sirve la interfaz estática. En el plan Free, Render suspende un Web Service sin tráfico después de 15 minutos y el primer acceso posterior puede tardar alrededor de un minuto en despertar. Para que el API esté disponible sin esa espera, se necesita un servicio Render de pago. Neon mantiene los datos; el API no usa almacenamiento local persistente.
+En el plan Free, Render suspende un Web Service sin tráfico después de 15 minutos y el primer acceso posterior puede tardar alrededor de un minuto en despertar. Neon mantiene los datos; el API no usa almacenamiento local persistente.
 
 ## Seguridad
 
