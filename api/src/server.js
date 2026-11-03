@@ -109,7 +109,7 @@ function coverData(req, blog) {
   const coverUrl = blog.cover_image || (localPath
     ? `${apiBase}/api/blog-files/${encodeURIComponent(blog.slug)}/${localPath.split('/').map(encodeURIComponent).join('/')}`
     : '');
-  return { cover_url: coverUrl, cover_fit: Boolean(localPath?.startsWith('assets/pages/')) };
+  return { cover_url: coverUrl, cover_fit: Boolean(localPath?.endsWith('.svg') || localPath?.startsWith('assets/pages/')) };
 }
 
 function validOptionalHttpUrl(value) {
@@ -231,8 +231,8 @@ app.get('/api/blogs', authenticate, asyncRoute(async (req, res) => {
       b.integration_mode,b.cover_image,b.status,b.is_featured,b.published_at,
       COALESCE(array_agg(DISTINCT c.name) FILTER(WHERE c.id IS NOT NULL),ARRAY[]::text[]) AS category_names,
       (SELECT f.path FROM blog_files f
-       WHERE f.blog_id=b.id AND (f.path='cover.jpg' OR (b.slug='algoritmos-bajo-sospecha' AND f.path='assets/pages/pagina-01.jpg'))
-       ORDER BY CASE WHEN f.path='cover.jpg' THEN 0 ELSE 1 END LIMIT 1) AS local_cover_path
+       WHERE f.blog_id=b.id AND (f.path IN ('cover.svg','cover.jpg') OR (b.slug='algoritmos-bajo-sospecha' AND f.path='assets/pages/pagina-01.jpg'))
+       ORDER BY CASE WHEN f.path='cover.svg' THEN 0 WHEN f.path='cover.jpg' THEN 1 ELSE 2 END LIMIT 1) AS local_cover_path
     FROM blogs b LEFT JOIN blog_categories bc ON bc.blog_id=b.id LEFT JOIN categories c ON c.id=bc.category_id
     WHERE ${clauses.join(' AND ')}`, params);
   res.json({ blogs: blogs.map(blog => ({ ...blog, ...coverData(req, blog) })) });
@@ -244,8 +244,8 @@ app.get('/api/blogs/:slug', authenticate, asyncRoute(async (req, res) => {
     SELECT b.id,b.title,b.slug,b.description,b.author_name,b.source_platform,b.original_url,
       b.integration_mode,b.cover_image,b.status,b.is_featured,b.published_at,
       (SELECT f.path FROM blog_files f
-       WHERE f.blog_id=b.id AND (f.path='cover.jpg' OR (b.slug='algoritmos-bajo-sospecha' AND f.path='assets/pages/pagina-01.jpg'))
-       ORDER BY CASE WHEN f.path='cover.jpg' THEN 0 ELSE 1 END LIMIT 1) AS local_cover_path,
+       WHERE f.blog_id=b.id AND (f.path IN ('cover.svg','cover.jpg') OR (b.slug='algoritmos-bajo-sospecha' AND f.path='assets/pages/pagina-01.jpg'))
+       ORDER BY CASE WHEN f.path='cover.svg' THEN 0 WHEN f.path='cover.jpg' THEN 1 ELSE 2 END LIMIT 1) AS local_cover_path,
       COALESCE(array_agg(DISTINCT c.name) FILTER(WHERE c.id IS NOT NULL),ARRAY[]::text[]) AS category_names
     FROM blogs b LEFT JOIN blog_categories bc ON bc.blog_id=b.id LEFT JOIN categories c ON c.id=bc.category_id
     WHERE b.slug=$1 AND b.status='published'`, [req.params.slug]);

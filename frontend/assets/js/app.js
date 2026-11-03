@@ -311,9 +311,9 @@ $('#menuToggle').addEventListener('click', () => { const open = $('#mainNav').cl
 $$('#mainNav a').forEach(link => link.addEventListener('click', () => { $('#mainNav').classList.remove('is-open'); $('#menuToggle').setAttribute('aria-expanded','false'); }));
 $$('.main-nav a').forEach(link => link.addEventListener('click', event => {
   const nav = link.dataset.nav;
-  if (nav === 'blogs' || nav === 'categories') {
+  if (nav === 'blogs') {
     event.preventDefault();
-    const target = nav === 'blogs' ? 'blogs' : 'categorias';
+    const target = 'blogs';
     if (location.hash === '#/' || location.hash === '' || location.hash === '#') {
       document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
