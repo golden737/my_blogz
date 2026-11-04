@@ -1,8 +1,0 @@
-BLOG: Pensamiento crítico en la sociedad contemporánea
-
-ZIP reconstruido para My Blogs. El archivo index.html está en la raíz.
-Incluye portada cover.jpg y tres ilustraciones locales recortadas de la captura facilitada para evitar imágenes externas rotas.
-El diseño reproduce la estructura visible en la captura: cabecera granate, tarjeta blanca centrada, texto serif compacto, imágenes dentro del artículo y referencias.
-El encabezado y pie de integración permiten volver a My Blogs mediante ../../, de acuerdo con la ruta local de la plataforma.
-
-Integración corregida: el encabezado de Cuaderno digital aparece antes del diseño original del artículo y el pie común aparece después del contenido.
