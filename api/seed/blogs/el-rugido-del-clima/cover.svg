@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-labelledby="title desc">
+  <title id="title">El rugido del clima</title>
+  <desc id="desc">Portada sobre cambio climático y fenómenos meteorológicos extremos.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#273954"/><stop offset=".55" stop-color="#98695e"/><stop offset="1" stop-color="#d69b65"/></linearGradient>
+    <linearGradient id="earth" x1="0" x2="1"><stop stop-color="#40a6a5"/><stop offset="1" stop-color="#67bb8c"/></linearGradient>
+  </defs>
+  <rect width="1200" height="500" fill="url(#sky)"/>
+  <circle cx="940" cy="228" r="170" fill="url(#earth)" stroke="#d2f0d4" stroke-width="8"/>
+  <path d="M823 110q46-32 88-10l24 39-31 29 11 43-35 22-41-22-23-45 7-56zm145 18 49 9 22 38-29 29-47-12-18-34zm-92 161 33-24 42 13 17 46-24 55-48-16-23-42z" fill="#548b62" opacity=".9"/>
+  <path d="M780 94c74-61 188-61 263 0m-299 38c84-90 253-90 337 0m-344 205c81 78 237 78 318 0" fill="none" stroke="#fff6e8" stroke-opacity=".74" stroke-width="7" stroke-linecap="round"/>
+  <path d="M1003 82c42-55 63-65 83-49 17 14-4 45-44 79m-3 254c44 34 58 61 37 76-18 12-45-8-70-47" fill="none" stroke="#fff6e8" stroke-opacity=".85" stroke-width="8" stroke-linecap="round"/>
+  <path d="M0 369q90-43 180 0t180 0 180 0 180 0 180 0 180 0 120 0v131H0z" fill="#253b43" opacity=".6"/>
+  <g fill="#f9d17b" opacity=".9"><circle cx="1080" cy="72" r="8"/><circle cx="1112" cy="108" r="5"/><circle cx="756" cy="80" r="6"/></g>
+  <text x="64" y="142" fill="#ffe0a5" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="4">CAMBIO CLIMÁTICO · FENÓMENOS EXTREMOS</text>
+  <text x="60" y="250" fill="#ffffff" font-family="Arial,sans-serif" font-size="74" font-weight="800">El rugido</text>
+  <text x="60" y="337" fill="#ffffff" font-family="Arial,sans-serif" font-size="74" font-weight="800">del clima</text>
+  <rect x="66" y="382" width="130" height="7" rx="3.5" fill="#ffe0a5"/>
+</svg>
