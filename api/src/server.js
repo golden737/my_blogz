@@ -364,7 +364,7 @@ app.put('/api/admin/blogs/:id', authenticate, requireRole('editor','super_admin'
     const saved=await client.query(
       `UPDATE blogs SET title=$1,slug=$2,description=$3,author_name=$4,source_platform=$5,original_url=$6,
        integration_mode=$7,cover_image=$8,status=$9,is_featured=$10,
-       published_at=CASE WHEN $9='published' THEN COALESCE(published_at,NOW()) ELSE NULL END,updated_at=NOW()
+       published_at=CASE WHEN $9='published' THEN COALESCE(published_at,NOW()) ELSE NULL END
        WHERE id=$11 RETURNING id`,
       [title,slug,String(body.description||''),String(body.author_name||''),String(body.source_platform||'other'),originalUrl,mode,coverImage,status,body.is_featured==='true'||body.is_featured==='1',id]
     );

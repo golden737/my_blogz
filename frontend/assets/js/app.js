@@ -5,6 +5,15 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null, blogs: [], categories: [], search: '', category: '', editBlog: null, editUser: null, scrollTarget: '' };
 
+// Handle failed cover images from an external script so the CSP can keep
+// blocking inline event handlers.
+document.addEventListener('error', event => {
+  const image = event.target;
+  if (image instanceof HTMLImageElement && image.hasAttribute('data-cover-fallback')) {
+    image.parentElement.innerHTML = '<div class="image-placeholder"><span>My Blogs</span></div>';
+  }
+}, true);
+
 function esc(value = '') {
   return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 }
@@ -84,7 +93,7 @@ async function loadCatalog(filters = {}) {
 function renderBlogCard(blog) {
   const date = blog.published_at ? new Date(blog.published_at).toLocaleDateString('es-SV', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
   const cover = blog.cover_url
-    ? `<img class="${blog.cover_fit ? 'cover-fit-contain' : ''}" src="${esc(blog.cover_url)}" alt="Portada de ${esc(blog.title)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;image-placeholder&quot;>My Blogs</div>'">`
+    ? `<img class="${blog.cover_fit ? 'cover-fit-contain' : ''}" src="${esc(blog.cover_url)}" alt="Portada de ${esc(blog.title)}" loading="lazy" data-cover-fallback>`
     : '<div class="image-placeholder"><span>My Blogs</span></div>';
   return `<article class="blog-card">
     <a class="card-image" href="#/blog/${encodeURIComponent(blog.slug)}">${cover}</a>
@@ -214,7 +223,7 @@ function renderBlogAdmin(blogs, categories) {
       <form id="blogForm" class="stack-form" enctype="multipart/form-data">
         <input type="hidden" name="id" value="${editing?.id || ''}">
         <label>Título<input name="title" required maxlength="200" value="${esc(editing?.title || '')}" placeholder="Mi blog de tecnología"></label>
-        <label>Slug (URL corta)<input name="slug" required pattern="[a-zA-Z0-9-]+" value="${esc(editing?.slug || '')}" placeholder="mi-blog-de-tecnologia"></label>
+        <label>Slug (URL corta)<input name="slug" required pattern="[a-zA-Z0-9\\-]+" value="${esc(editing?.slug || '')}" placeholder="mi-blog-de-tecnologia"></label>
         <label>Descripción<textarea name="description" rows="3" placeholder="¿De qué trata este blog?">${esc(editing?.description || '')}</textarea></label>
         <label>Autor<input name="author_name" value="${esc(editing?.author_name || '')}" placeholder="Nombre del autor"><small class="form-help">Este nombre aparecerá en el pie del blog.</small></label>
         <label>URL original<input type="url" name="original_url" value="${esc(editing?.original_url || '')}" placeholder="https://..."></label>
@@ -267,7 +276,7 @@ function bindBlogAdmin() {
 }
 
 function renderCategoryAdmin(categories) {
-  return `<section class="admin-panel"><h2>Categorías</h2><form id="categoryForm" class="category-form"><label>Nombre<input name="name" required placeholder="Ej. Tecnología"></label><label>Slug<input name="slug" required pattern="[a-zA-Z0-9-]+" placeholder="tecnologia"></label><button class="button" type="submit">Agregar categoría</button></form>
+  return `<section class="admin-panel"><h2>Categorías</h2><form id="categoryForm" class="category-form"><label>Nombre<input name="name" required placeholder="Ej. Tecnología"></label><label>Slug<input name="slug" required pattern="[a-zA-Z0-9\\-]+" placeholder="tecnologia"></label><button class="button" type="submit">Agregar categoría</button></form>
     <div class="category-admin-list">${categories.map(category => `<div><span>${esc(category.name)} <small>(${category.blog_count} blogs)</small></span><button class="danger-link" data-delete-category="${category.id}">Eliminar</button></div>`).join('')}</div>
     <p class="muted small">Puedes asignar una o varias categorías al crear o editar cada blog.</p></section>`;
 }
