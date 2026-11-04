@@ -43,6 +43,9 @@ CREATE TABLE IF NOT EXISTS blogs (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Compatibilidad con bases creadas usando una versión anterior del esquema.
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
 CREATE INDEX IF NOT EXISTS idx_blogs_status ON blogs(status);
 CREATE INDEX IF NOT EXISTS idx_blogs_featured ON blogs(is_featured);
 

@@ -79,6 +79,11 @@ export async function initializeDatabase() {
     );
   `);
 
+  // Bring forward databases created by earlier releases. CREATE TABLE IF NOT
+  // EXISTS does not add columns to an existing table, and blog updates rely on
+  // this timestamp column.
+  await pool.query(`ALTER TABLE blogs ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`);
+
   const categories = [
     ['Tecnología', 'tecnologia', 'Programación, herramientas y tecnología.'],
     ['Estilo de vida', 'estilo-de-vida', 'Hábitos, bienestar y experiencias.'],
