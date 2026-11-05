@@ -295,23 +295,10 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
     }).replace(/<\/style/gi, '<\\/style');
     return `<style>${css}</style>`;
   });
-  const unifiedBlogChrome = `<style>
-    .platform-bar{display:none!important}
-    .blog-banner{height:210px;display:flex;align-items:flex-start;gap:24px;padding:18px clamp(18px,5vw,64px);color:#fff;background:radial-gradient(ellipse at 12% 12%,rgba(3,35,57,.82),transparent 42%),radial-gradient(ellipse at 79% 18%,rgba(0,132,117,.68),transparent 42%),linear-gradient(125deg,#06455d 0%,#08706f 52%,#073a56 100%);font-family:"Brush Script MT","Segoe Script",cursive;font-weight:700;font-size:clamp(18px,2.6vw,28px);text-shadow:0 2px 5px #001c27}
-    .blog-back,.search-mark{color:#fff;text-decoration:none;font:24px Arial,sans-serif;line-height:1}.blog-back{margin-top:2px}.search-mark{margin-left:auto}
-    .platform-footer{margin-top:34px;padding:22px clamp(16px,4vw,48px);display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#fff;border-top:1px solid #dedede;color:#626262;font:14px Arial,Helvetica,sans-serif}
-    .platform-footer a{color:#b92736;text-decoration:none;font-weight:700}
-    @media(max-width:600px){.blog-banner{height:170px;padding:16px 14px;gap:12px;font-size:18px}.platform-footer{padding:16px 14px;font-size:12px}}
-  </style><base href="${escapeHtml(fileBase)}"></head>`;
-  html = html.replace(/<\/head>/i, unifiedBlogChrome);
-  html = html.replace(/<header\b[^>]*class=(['"])[^'"]*\bplatform-bar\b[^'"]*\1[^>]*>[\s\S]*?<\/header>/i, '');
-  html = html.replace(/<header\b[^>]*class=(['"])[^'"]*\b(?:blog-header|site-head)\b[^'"]*\1[^>]*>[\s\S]*?<\/header>/i, '');
-  html = html.replace(/<div\b[^>]*class=(['"])[^'"]*\bblog-banner\b[^'"]*\1[^>]*>[\s\S]*?<\/div>/i, '');
-  html = html.replace(/<footer\b[^>]*class=(['"])[^'"]*\bplatform-footer\b[^'"]*\1[^>]*>[\s\S]*?<\/footer>/i, '');
-  const header = `<header class="blog-banner"><a class="blog-back" href="${escapeHtml(siteBase)}" aria-label="Volver a My Blogs">←</a><span>${escapeHtml(blog.title)}</span><span class="search-mark" aria-hidden="true">⌕</span></header>`;
-  const footer = `<footer class="platform-footer"><span>${escapeHtml(blog.title)} · ${escapeHtml(blog.author_name || 'Autor del blog')}</span><a href="${escapeHtml(siteBase)}">Volver a My Blogs ↑</a></footer>`;
-  html = html.replace(/<body\b[^>]*>/i, match => `${match}${header}`);
-  html = html.replace(/<\/body>/i, `${footer}<script src="${escapeHtml(apiBase)}/assets/js/blog-frame-resize.js" defer></script></body>`);
+  html = html.replace(/<\/head>/i, `<base href="${escapeHtml(fileBase)}"></head>`);
+  // Keep each blog's InfinityFree HTML and CSS intact. Only adapt local asset
+  // URLs and the panel author token; the original page owns its own chrome.
+  html = html.replace(/<\/body>/i, `<script src="${escapeHtml(apiBase)}/assets/js/blog-frame-resize.js" defer></script></body>`);
   res.json({ html });
 }));
 
