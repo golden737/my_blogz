@@ -21,7 +21,10 @@ const allowedOrigins = (process.env.FRONTEND_ORIGIN || 'http://localhost:5500,ht
 
 if (!JWT_SECRET || JWT_SECRET.length < 32) throw new Error('JWT_SECRET debe tener al menos 32 caracteres.');
 app.set('trust proxy', 1);
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: { directives: { 'img-src': ["'self'", 'data:', 'https:'] } }
+}));
 const corsForFrontend = cors({
   origin(origin, callback) {
     if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ''))) return callback(null, true);
@@ -93,6 +96,46 @@ function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[char]);
+}
+
+function findHtmlElementByClass(html, classNames) {
+  const wanted = new Set(classNames);
+  const openTags = /<(header|div|footer)\b[^>]*>/gi;
+  let opening;
+  while ((opening = openTags.exec(html))) {
+    const classes = opening[0].match(/\bclass=(['"])(.*?)\1/i)?.[2]?.split(/\s+/) || [];
+    if (!classes.some(className => wanted.has(className))) continue;
+    const tagName = opening[1];
+    const tags = new RegExp(`<\\/?${tagName}\\b[^>]*>`, 'gi');
+    tags.lastIndex = openTags.lastIndex;
+    let depth = 1;
+    let tag;
+    while ((tag = tags.exec(html))) {
+      if (new RegExp(`^<\\/${tagName}\\b`, 'i').test(tag[0])) depth -= 1;
+      else if (!/\/>$/.test(tag[0])) depth += 1;
+      if (!depth) return { start: opening.index, end: tags.lastIndex, tagName, html: html.slice(opening.index, tags.lastIndex) };
+    }
+  }
+  return null;
+}
+
+function replaceHtmlElement(html, element, replacement) {
+  return element ? `${html.slice(0, element.start)}${replacement}${html.slice(element.end)}` : html;
+}
+
+function findHtmlElementByTag(html, tagName) {
+  const opening = new RegExp(`<${tagName}\\b[^>]*>`, 'i').exec(html);
+  if (!opening) return null;
+  const tags = new RegExp(`<\\/?${tagName}\\b[^>]*>`, 'gi');
+  tags.lastIndex = opening.index + opening[0].length;
+  let depth = 1;
+  let tag;
+  while ((tag = tags.exec(html))) {
+    if (new RegExp(`^<\\/${tagName}\\b`, 'i').test(tag[0])) depth -= 1;
+    else if (!/\/>$/.test(tag[0])) depth += 1;
+    if (!depth) return { start: opening.index, end: tags.lastIndex, tagName, html: html.slice(opening.index, tags.lastIndex) };
+  }
+  return null;
 }
 
 function parseCategoryIds(value) {
@@ -265,7 +308,7 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
   const blog = result.rows[0];
   const apiBase = `${req.protocol}://${req.get('host')}`;
   const fileBase = `${apiBase}/api/blog-files/${encodeURIComponent(blog.slug)}/`;
-  const siteBase = SITE_BASE_URL.endsWith('/') ? SITE_BASE_URL : `${SITE_BASE_URL}/`;
+  const appHome = SITE_BASE_URL.endsWith('/') ? SITE_BASE_URL : `${SITE_BASE_URL}/`;
   let html = blog.content.toString('utf8');
   const styleRows = await pool.query(
     "SELECT path,content FROM blog_files WHERE blog_id=$1 AND LOWER(path) LIKE '%.css'",
@@ -274,7 +317,7 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
   const styles = new Map(styleRows.rows.map(row => [row.path, row.content.toString('utf8')]));
   html = html.replace(/\{\{BLOG_AUTHOR\}\}/g, escapeHtml(blog.author_name || 'Autor del blog'));
   html = html.replace(/<base\b[^>]*>/gi, '');
-  html = html.replace(/href=(['"])(?:\.\.\/)+(?:\1)/gi, `href="${escapeHtml(siteBase)}"`);
+  html = html.replace(/href=(['"])(?:\.\.\/)+(?:\1)/gi, `href="${escapeHtml(appHome)}" target="_top" data-myblogs-home`);
   // srcdoc is sandboxed with an opaque origin. Inline each packaged stylesheet
   // so the browser can apply the original design without granting same-origin
   // access to the embedded blog.
@@ -295,9 +338,51 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
     }).replace(/<\/style/gi, '<\\/style');
     return `<style>${css}</style>`;
   });
-  html = html.replace(/<\/head>/i, `<base href="${escapeHtml(fileBase)}"></head>`);
-  // Keep each blog's InfinityFree HTML and CSS intact. Only adapt local asset
-  // URLs and the panel author token; the original page owns its own chrome.
+  html = html.replace(/<iframe\b[^>]*>[\s\S]*?<\/iframe>/gi, frame => {
+    const match = frame.match(/\bsrc=(['"])(https?:\/\/(?:www\.)?youtube-nocookie\.com\/embed\/([\w-]+)[^'"]*)\1/i);
+    if (!match) return frame;
+    const videoId = match[3];
+    const title = frame.match(/\btitle=(['"])(.*?)\1/i)?.[2] || 'Ver video en YouTube';
+    return `<a class="myblogs-video-link" href="https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(title)}"><img src="https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg" alt="Miniatura: ${escapeHtml(title)}"><span>▶ Ver en YouTube</span></a>`;
+  });
+
+  const chromeStyle = `<style>
+    .platform-bar,.site-head{position:sticky!important;top:0!important;z-index:20!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:1rem!important;min-height:66px!important;height:auto!important;padding:14px clamp(16px,4vw,48px)!important;background:#fff!important;border-bottom:1px solid #dedede!important;color:#222!important;font:700 14px Arial,Helvetica,sans-serif!important}
+    .platform-bar a,.site-head a{font-family:Arial,Helvetica,sans-serif!important;text-decoration:none!important}.platform-bar .platform-brand:before,.site-head .brand:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#b92736;margin-right:9px}.platform-bar .platform-brand,.site-head .brand{color:#222!important}.platform-bar .back,.site-head .back{color:#b92736!important;font-weight:700!important}
+    .blog-banner{position:relative!important;z-index:1!important;width:100%!important;height:210px!important;min-height:210px!important;margin:0!important;padding:18px clamp(18px,5vw,64px)!important;display:flex!important;align-items:flex-start!important;gap:24px!important;color:#fff!important;background:radial-gradient(ellipse at 12% 12%,rgba(3,35,57,.82),transparent 42%),radial-gradient(ellipse at 79% 18%,rgba(0,132,117,.68),transparent 42%),linear-gradient(125deg,#06455d 0%,#08706f 52%,#073a56 100%)!important;font:700 clamp(18px,2.6vw,28px)/1.25 "Brush Script MT","Segoe Script",cursive!important;text-shadow:0 2px 5px #001c27!important}
+    .blog-banner .blog-back,.blog-banner .search-mark{color:#fff!important;text-decoration:none!important;font:24px/1 Arial,sans-serif!important}.blog-banner .blog-back{margin-top:2px}.blog-banner>span:nth-child(2){display:block;flex:1;min-width:0;overflow-wrap:anywhere}.blog-banner .search-mark{margin-left:auto}
+    .blog-banner+main,.blog-banner+.layout{position:relative!important;z-index:2!important;margin-top:-104px!important}
+    .platform-footer{position:relative!important;z-index:1!important;width:100%!important;min-height:66px!important;margin:34px 0 0!important;padding:22px clamp(16px,4vw,48px)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:1rem!important;background:#fff!important;border-top:1px solid #dedede!important;color:#626262!important;font:14px Arial,Helvetica,sans-serif!important}
+    .platform-footer a{color:#b92736!important;text-decoration:none!important;font-weight:700!important}
+    .myblogs-video-link{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;background:#13202a;color:#fff!important;text-decoration:none!important}.myblogs-video-link img{display:block;width:100%;height:100%;object-fit:cover;opacity:.86}.myblogs-video-link span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 15px;border-radius:999px;background:#c90024;color:#fff;font:700 13px Arial,sans-serif;white-space:nowrap}
+    @media(max-width:600px){.platform-bar,.site-head{min-height:54px!important;padding:12px 14px!important}.blog-banner{height:170px!important;min-height:170px!important;padding:16px 14px!important;gap:12px!important;font-size:18px!important}.blog-banner+main,.blog-banner+.layout{margin-top:-88px!important}.platform-footer{min-height:54px!important;margin-top:24px!important;padding:16px 14px!important;font-size:12px!important}}
+  </style>`;
+  html = html.replace(/<\/head>/i, `${chromeStyle}<base href="${escapeHtml(fileBase)}"></head>`);
+
+  const unifiedBanner = `<div class="blog-banner"><a class="blog-back" href="${escapeHtml(appHome)}" target="_top" data-myblogs-home aria-label="Volver a My Blogs">←</a><span>${escapeHtml(blog.title)}</span><span class="search-mark" aria-hidden="true">⌕</span></div>`;
+  const currentBanner = findHtmlElementByClass(html, ['blog-banner', 'blog-header']);
+  if (currentBanner) {
+    html = replaceHtmlElement(html, currentBanner, unifiedBanner);
+  } else {
+    const topBar = findHtmlElementByClass(html, ['platform-bar', 'site-head']);
+    if (topBar) html = `${html.slice(0, topBar.end)}${unifiedBanner}${html.slice(topBar.end)}`;
+    else html = html.replace(/<body\b[^>]*>/i, match => `${match}${unifiedBanner}`);
+  }
+
+  const attribution = findHtmlElementByClass(html, ['blogger-attribution']);
+  if (attribution) html = replaceHtmlElement(html, attribution, '');
+  let sourceFooter = findHtmlElementByClass(html, ['platform-footer']) || findHtmlElementByTag(html, 'footer');
+  const footerLabel = sourceFooter?.html.match(/<span\b[^>]*>([\s\S]*?)<\/span>/i)?.[1]
+    || `${escapeHtml(blog.title)} · ${escapeHtml(blog.author_name || 'Autor del blog')}`;
+  const unifiedFooter = `<footer class="platform-footer"><span>${footerLabel}</span><a href="${escapeHtml(appHome)}" target="_top" data-myblogs-home>Volver a My Blogs ↑</a></footer>`;
+  html = sourceFooter ? replaceHtmlElement(html, sourceFooter, unifiedFooter) : html.replace(/<\/body>/i, unifiedFooter + '</body>');
+  if (attribution) {
+    const footer = findHtmlElementByClass(html, ['platform-footer']);
+    if (footer) html = `${html.slice(0, footer.start)}${attribution.html}${html.slice(footer.start)}`;
+  }
+
+  // The iframe keeps its own scroll area so sticky Blogger chrome works like
+  // the original InfinityFree page; no height feedback loop is needed.
   html = html.replace(/<\/body>/i, `<script src="${escapeHtml(apiBase)}/assets/js/blog-frame-resize.js" defer></script></body>`);
   res.json({ html });
 }));

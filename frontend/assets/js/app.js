@@ -7,9 +7,8 @@ const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null
 
 window.addEventListener('message', event => {
   const frame = $('#blogReader iframe');
-  if (!frame || event.source !== frame.contentWindow || event.data?.type !== 'myblogs-reader-height') return;
-  const height = Number(event.data.height);
-  if (Number.isFinite(height) && height >= 300 && height <= 30000) frame.style.height = `${height}px`;
+  if (!frame || event.source !== frame.contentWindow) return;
+  if (event.data?.type === 'myblogs-go-home') location.hash = '#/';
 });
 
 // Handle failed cover images from an external script so the CSP can keep
@@ -168,10 +167,9 @@ async function renderBlog(slug) {
     const { html } = await api(`/blogs/${encodeURIComponent(slug)}/page`);
     const iframe = document.createElement('iframe');
     iframe.title = blog.title;
-    iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox');
+    iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation');
     iframe.setAttribute('scrolling', 'auto');
     iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    iframe.style.height = `${Math.max(window.innerHeight, 600)}px`;
     iframe.srcdoc = html;
     $('#readerLoading').hidden = true;
     const reader = $('#blogReader'); reader.hidden = false; reader.append(iframe);
