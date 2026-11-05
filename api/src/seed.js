@@ -38,13 +38,23 @@ async function walkFiles(dir, prefix = '') {
 export async function seedPackagedBlogs() {
   const client = await pool.connect();
   try {
+    await client.query(`CREATE TABLE IF NOT EXISTS app_migrations (
+      migration_key TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`);
+    const coverMigration = await client.query(
+      `INSERT INTO app_migrations(migration_key) VALUES('2026-11-04-packaged-cover-refresh-v1')
+       ON CONFLICT DO NOTHING RETURNING migration_key`
+    );
+    if (coverMigration.rowCount) {
+      await client.query('UPDATE blogs SET cover_image=NULL WHERE slug=ANY($1::text[])', [blogs.map(item => item.slug)]);
+    }
     for (const item of blogs) {
       await client.query('BEGIN');
       const inserted = await client.query(
         `INSERT INTO blogs(title,slug,description,author_name,source_platform,original_url,integration_mode,cover_image,status,published_at)
          VALUES($1,$2,$3,$4,'custom',$5,'local',$6,'published',$7::date)
          ON CONFLICT(slug) DO NOTHING RETURNING id`,
-        [item.title, item.slug, item.description, item.author_name, item.original_url, item.cover_image || '', item.published_at]
+        [item.title, item.slug, item.description, item.author_name, item.original_url, '', item.published_at]
       );
       const found = inserted.rows[0]
         ? inserted.rows[0]

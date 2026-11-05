@@ -171,9 +171,7 @@ async function renderBlog(slug) {
     iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox');
     iframe.setAttribute('scrolling', 'no');
     iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    const visibleTextLength = html.replace(/<style\b[\s\S]*?<\/style>/gi, '').replace(/<[^>]+>/g, '').length;
-    const imageCount = (html.match(/<img\b/gi) || []).length;
-    iframe.style.height = `${Math.max(window.innerHeight, Math.min(16000, visibleTextLength * 0.5 + imageCount * 320 + 500))}px`;
+    iframe.style.height = `${Math.max(window.innerHeight, 600)}px`;
     iframe.srcdoc = html;
     $('#readerLoading').hidden = true;
     const reader = $('#blogReader'); reader.hidden = false; reader.append(iframe);
@@ -188,7 +186,7 @@ function setActiveNav(route) {
 }
 
 async function renderAbout() {
-  $('#viewRoot').innerHTML = `<section class="detail-wrap"><div class="detail-content"><p class="eyebrow">ACERCA DEL PROYECTO</p><h1>Un espacio para descubrir nuevas ideas.</h1><p class="detail-description">My Blogs reúne en un solo lugar blogs de distintos temas y plataformas. Cada ficha presenta información sobre el blog y permite visitar su contenido original.</p><p class="muted">Este sitio es una plataforma de descubrimiento; el contenido externo pertenece a sus respectivos autores.</p><a class="button" href="#/">Explorar blogs</a></div></section>`;
+  $('#viewRoot').innerHTML = `<section class="detail-wrap about-page"><div class="detail-content"><p class="eyebrow">ACERCA DEL PROYECTO</p><h1>Un espacio para descubrir nuevas ideas.</h1><p class="detail-description">My Blogs reúne en un solo lugar blogs de distintos temas y plataformas. Cada ficha presenta información sobre el blog y permite visitar su contenido original.</p><p class="muted">Este sitio es una plataforma de descubrimiento; el contenido externo pertenece a sus respectivos autores.</p><a class="button" href="#/">Explorar blogs</a></div></section>`;
 }
 
 async function renderRoute() {

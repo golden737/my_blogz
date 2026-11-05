@@ -296,17 +296,18 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
     return `<style>${css}</style>`;
   });
   const unifiedBlogChrome = `<style>
-    .platform-bar{position:relative;top:auto;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:14px clamp(16px,4vw,48px);background:#fff;border-bottom:1px solid #dedede}
-    .platform-brand{font-weight:700;text-decoration:none;color:#222}
-    .platform-brand:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#b92736;margin-right:9px}
-    .back{color:#b92736;font:700 .92rem Arial,Helvetica,sans-serif;text-decoration:none}
-    .platform-footer,body>footer{margin:0;padding:22px clamp(16px,4vw,48px);display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#fff;border-top:1px solid #dedede;color:#626262;font:13px Arial,Helvetica,sans-serif}
+    .platform-bar{display:none!important}
+    .blog-banner{min-height:190px;margin:0;padding:30px clamp(18px,5vw,72px) 72px;display:flex;align-items:flex-start;gap:22px;background:linear-gradient(120deg,#07364a,#087b78);color:#fff;font:600 clamp(20px,3vw,36px) Georgia,serif}
+    .blog-banner .blog-back,.blog-banner .search-mark{color:#fff;text-decoration:none;font:24px Arial,sans-serif}
+    .blog-banner>span:nth-child(2){flex:1}
+    .platform-footer,body>footer{position:relative;z-index:2;margin:0;padding:24px clamp(18px,5vw,72px);display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#55c1ca;border:0;color:#fff;font:14px Arial,Helvetica,sans-serif}
     .platform-footer span,body>footer span{font-weight:600}
-    .platform-footer a,body>footer a{color:#b92736;text-decoration:none;font-weight:700}
-    @media(max-width:600px){.platform-bar{padding:12px 14px}.platform-footer,body>footer{padding:16px 14px;font-size:12px}}
+    .platform-footer a,body>footer a{color:#fff;text-decoration:none;font-weight:700}
+    @media(max-width:600px){.blog-banner{min-height:150px;padding:24px 16px 56px}.platform-footer,body>footer{padding:18px 14px;font-size:12px}}
   </style><base href="${escapeHtml(fileBase)}"></head>`;
   html = html.replace(/<\/head>/i, unifiedBlogChrome);
-  html = html.replace(/<\/body>/i, `<script src="${escapeHtml(apiBase)}/assets/js/blog-frame-resize.js" defer></script></body>`);
+  const chromeParams = new URLSearchParams({ title: blog.title, author: blog.author_name || 'Autor del blog', home: siteBase });
+  html = html.replace(/<\/body>/i, `<script src="${escapeHtml(apiBase)}/assets/js/blog-frame-resize.js?${escapeHtml(chromeParams.toString())}" defer></script></body>`);
   res.json({ html });
 }));
 
