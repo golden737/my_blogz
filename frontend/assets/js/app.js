@@ -5,6 +5,13 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null, blogs: [], categories: [], search: '', category: '', editBlog: null, editUser: null, scrollTarget: '' };
 
+window.addEventListener('message', event => {
+  const frame = $('#blogReader iframe');
+  if (!frame || event.source !== frame.contentWindow || event.data?.type !== 'myblogs-reader-height') return;
+  const height = Number(event.data.height);
+  if (Number.isFinite(height) && height >= 300 && height <= 30000) frame.style.height = `${height}px`;
+});
+
 // Handle failed cover images from an external script so the CSP can keep
 // blocking inline event handlers.
 document.addEventListener('error', event => {
@@ -144,10 +151,7 @@ async function renderBlog(slug) {
   const isLocal = blog.integration_mode === 'local';
   document.body.classList.toggle('local-blog-open', isLocal);
   if (isLocal) {
-    // The cover belongs to the catalog card. Showing it in this wrapper made
-    // it look like an extra image in the article and displaced its original design.
-    $('#viewRoot').innerHTML = `<div class="local-blog-return"><a class="back-link" href="#/">← Volver a los blogs</a></div>
-      <div class="reader-loading" id="readerLoading">Cargando el blog…</div>
+    $('#viewRoot').innerHTML = `<div class="reader-loading" id="readerLoading">Cargando el blog…</div>
       <div class="blog-reader" id="blogReader" hidden></div>`;
   } else {
     $('#viewRoot').innerHTML = `<section class="detail-wrap">
@@ -165,7 +169,11 @@ async function renderBlog(slug) {
     const iframe = document.createElement('iframe');
     iframe.title = blog.title;
     iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox');
+    iframe.setAttribute('scrolling', 'no');
     iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+    const visibleTextLength = html.replace(/<style\b[\s\S]*?<\/style>/gi, '').replace(/<[^>]+>/g, '').length;
+    const imageCount = (html.match(/<img\b/gi) || []).length;
+    iframe.style.height = `${Math.max(window.innerHeight, Math.min(16000, visibleTextLength * 0.5 + imageCount * 320 + 500))}px`;
     iframe.srcdoc = html;
     $('#readerLoading').hidden = true;
     const reader = $('#blogReader'); reader.hidden = false; reader.append(iframe);

@@ -110,7 +110,7 @@ function coverData(req, blog) {
     ? `${apiBase}/api/blog-files/${encodeURIComponent(blog.slug)}/${localPath.split('/').map(encodeURIComponent).join('/')}`
     : '';
   const coverUrl = blog.cover_image || localUrl;
-  return { cover_url: coverUrl, cover_fit: Boolean(localPath?.endsWith('.svg') || localPath?.startsWith('assets/pages/')) };
+  return { cover_url: coverUrl, cover_fit: Boolean(localPath?.startsWith('assets/pages/')) };
 }
 
 function validOptionalHttpUrl(value) {
@@ -273,9 +273,6 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
   );
   const styles = new Map(styleRows.rows.map(row => [row.path, row.content.toString('utf8')]));
   html = html.replace(/\{\{BLOG_AUTHOR\}\}/g, escapeHtml(blog.author_name || 'Autor del blog'));
-  // This wrapper was added for portal navigation and duplicated the app chrome
-  // above the article. Keep the article's own Blogger header as its page header.
-  html = html.replace(/<header\b[^>]*class=(['"])[^'"]*\bplatform-bar\b[^'"]*\1[^>]*>[\s\S]*?<\/header>/i, '');
   html = html.replace(/<base\b[^>]*>/gi, '');
   html = html.replace(/href=(['"])(?:\.\.\/)+(?:\1)/gi, `href="${escapeHtml(siteBase)}"`);
   // srcdoc is sandboxed with an opaque origin. Inline each packaged stylesheet
@@ -298,7 +295,18 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
     }).replace(/<\/style/gi, '<\\/style');
     return `<style>${css}</style>`;
   });
-  html = html.replace(/<\/head>/i, `<base href="${escapeHtml(fileBase)}"></head>`);
+  const unifiedBlogChrome = `<style>
+    .platform-bar{position:relative;top:auto;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:14px clamp(16px,4vw,48px);background:#fff;border-bottom:1px solid #dedede}
+    .platform-brand{font-weight:700;text-decoration:none;color:#222}
+    .platform-brand:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#b92736;margin-right:9px}
+    .back{color:#b92736;font:700 .92rem Arial,Helvetica,sans-serif;text-decoration:none}
+    .platform-footer,body>footer{margin:0;padding:22px clamp(16px,4vw,48px);display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#fff;border-top:1px solid #dedede;color:#626262;font:13px Arial,Helvetica,sans-serif}
+    .platform-footer span,body>footer span{font-weight:600}
+    .platform-footer a,body>footer a{color:#b92736;text-decoration:none;font-weight:700}
+    @media(max-width:600px){.platform-bar{padding:12px 14px}.platform-footer,body>footer{padding:16px 14px;font-size:12px}}
+  </style><base href="${escapeHtml(fileBase)}"></head>`;
+  html = html.replace(/<\/head>/i, unifiedBlogChrome);
+  html = html.replace(/<\/body>/i, `<script src="${escapeHtml(apiBase)}/assets/js/blog-frame-resize.js" defer></script></body>`);
   res.json({ html });
 }));
 
