@@ -169,7 +169,7 @@ async function renderBlog(slug) {
     const iframe = document.createElement('iframe');
     iframe.title = blog.title;
     iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox');
-    iframe.setAttribute('scrolling', 'no');
+    iframe.setAttribute('scrolling', 'auto');
     iframe.referrerPolicy = 'strict-origin-when-cross-origin';
     iframe.style.height = `${Math.max(window.innerHeight, 600)}px`;
     iframe.srcdoc = html;
