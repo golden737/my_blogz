@@ -19,6 +19,9 @@
 .blog-reader{max-width:1160px;margin:18px auto 50px;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
 .blog-reader iframe{display:block;width:100%;min-height:82vh;border:0;background:#fff}
 .reader-loading{min-height:60vh;display:grid;place-items:center;color:var(--muted)}
+.local-blog-open #siteHeader,.local-blog-open .site-footer{display:none!important}
+.local-blog-return{max-width:1160px;margin:12px auto 0;padding:0 14px}
+.local-blog-return .back-link{font-size:12px;color:var(--muted)}
 .search-row{display:flex;gap:12px;align-items:center;margin:12px 0 24px}
 .search-row .search-form{flex:1;margin:0}
 .empty-note{grid-column:1/-1;border:1px dashed var(--line);border-radius:14px;padding:36px;text-align:center;color:var(--muted)}

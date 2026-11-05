@@ -268,6 +268,9 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
   const siteBase = SITE_BASE_URL.endsWith('/') ? SITE_BASE_URL : `${SITE_BASE_URL}/`;
   let html = blog.content.toString('utf8');
   html = html.replace(/\{\{BLOG_AUTHOR\}\}/g, escapeHtml(blog.author_name || 'Autor del blog'));
+  // This wrapper was added for portal navigation and duplicated the app chrome
+  // above the article. Keep the article's own Blogger header as its page header.
+  html = html.replace(/<header\b[^>]*class=(['"])[^'"]*\bplatform-bar\b[^'"]*\1[^>]*>[\s\S]*?<\/header>/i, '');
   html = html.replace(/<base\b[^>]*>/gi, '');
   html = html.replace(/href=(['"])(?:\.\.\/)+(?:\1)/gi, `href="${escapeHtml(siteBase)}"`);
   html = html.replace(/<\/head>/i, `<base href="${escapeHtml(fileBase)}"></head>`);

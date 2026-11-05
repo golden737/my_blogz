@@ -142,15 +142,24 @@ async function renderBlog(slug) {
   const result = await api(`/blogs/${encodeURIComponent(slug)}`);
   const blog = result.blog;
   const isLocal = blog.integration_mode === 'local';
-  $('#viewRoot').innerHTML = `<section class="detail-wrap">
+  document.body.classList.toggle('local-blog-open', isLocal);
+  if (isLocal) {
+    // The cover belongs to the catalog card. Showing it in this wrapper made
+    // it look like an extra image in the article and displaced its original design.
+    $('#viewRoot').innerHTML = `<div class="local-blog-return"><a class="back-link" href="#/">← Volver a los blogs</a></div>
+      <div class="reader-loading" id="readerLoading">Cargando el blog…</div>
+      <div class="blog-reader" id="blogReader" hidden></div>`;
+  } else {
+    $('#viewRoot').innerHTML = `<section class="detail-wrap">
       <a class="back-link" href="#/">← Volver a los blogs</a>
       ${blog.cover_url ? `<img class="detail-cover ${blog.cover_fit ? 'cover-fit-contain' : ''}" src="${esc(blog.cover_url)}" alt="${esc(blog.title)}">` : ''}
       <div class="detail-content"><span class="tag">${esc((blog.category_names || []).join(', '))}</span><h1>${esc(blog.title)}</h1>
         <div class="detail-meta">${blog.author_name ? `Por ${esc(blog.author_name)} · ` : ''}${esc(blog.source_platform)}</div>
         ${blog.description ? `<p class="detail-description">${esc(blog.description)}</p>` : ''}
-        ${isLocal ? '' : `<div class="integration-note"><h2>Continúa leyendo</h2><p>Abre el sitio original para continuar.</p><a class="button" href="${esc(blog.original_url)}" target="_blank" rel="noopener noreferrer">Visitar blog original ↗</a></div>`}
+        <div class="integration-note"><h2>Continúa leyendo</h2><p>Abre el sitio original para continuar.</p><a class="button" href="${esc(blog.original_url)}" target="_blank" rel="noopener noreferrer">Visitar blog original ↗</a></div>
       </div>
-    </section>${isLocal ? '<div class="reader-loading" id="readerLoading">Cargando el blog…</div><div class="blog-reader" id="blogReader" hidden></div>' : ''}`;
+    </section>`;
+  }
   if (isLocal) {
     const { html } = await api(`/blogs/${encodeURIComponent(slug)}/page`);
     const iframe = document.createElement('iframe');
@@ -176,6 +185,7 @@ async function renderAbout() {
 
 async function renderRoute() {
   if (!state.user) { headerMode(false); return; }
+  document.body.classList.remove('local-blog-open');
   const route = location.hash.replace(/^#\/?/, '');
   try {
     if (!route || route === '') { setActiveNav('home'); await renderHome(); }
