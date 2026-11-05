@@ -349,25 +349,18 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
   const chromeStyle = `<style>
     .platform-bar,.site-head{position:sticky!important;top:0!important;z-index:20!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:1rem!important;min-height:66px!important;height:auto!important;padding:14px clamp(16px,4vw,48px)!important;background:#fff!important;border-bottom:1px solid #dedede!important;color:#222!important;font:700 14px Arial,Helvetica,sans-serif!important}
     .platform-bar a,.site-head a{font-family:Arial,Helvetica,sans-serif!important;text-decoration:none!important}.platform-bar .platform-brand:before,.site-head .brand:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#b92736;margin-right:9px}.platform-bar .platform-brand,.site-head .brand{color:#222!important}.platform-bar .back,.site-head .back{color:#b92736!important;font-weight:700!important}
-    .blog-banner{position:relative!important;z-index:1!important;width:100%!important;height:210px!important;min-height:210px!important;margin:0!important;padding:18px clamp(18px,5vw,64px)!important;display:flex!important;align-items:flex-start!important;gap:24px!important;color:#fff!important;background:radial-gradient(ellipse at 12% 12%,rgba(3,35,57,.82),transparent 42%),radial-gradient(ellipse at 79% 18%,rgba(0,132,117,.68),transparent 42%),linear-gradient(125deg,#06455d 0%,#08706f 52%,#073a56 100%)!important;font:700 clamp(18px,2.6vw,28px)/1.25 "Brush Script MT","Segoe Script",cursive!important;text-shadow:0 2px 5px #001c27!important}
-    .blog-banner .blog-back,.blog-banner .search-mark{color:#fff!important;text-decoration:none!important;font:24px/1 Arial,sans-serif!important}.blog-banner .blog-back{margin-top:2px}.blog-banner>span:nth-child(2){display:block;flex:1;min-width:0;overflow-wrap:anywhere}.blog-banner .search-mark{margin-left:auto}
-    .blog-banner+main,.blog-banner+.layout{position:relative!important;z-index:2!important;margin-top:-104px!important}
     .platform-footer{position:relative!important;z-index:1!important;width:100%!important;min-height:66px!important;margin:34px 0 0!important;padding:22px clamp(16px,4vw,48px)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:1rem!important;background:#fff!important;border-top:1px solid #dedede!important;color:#626262!important;font:14px Arial,Helvetica,sans-serif!important}
     .platform-footer a{color:#b92736!important;text-decoration:none!important;font-weight:700!important}
     .myblogs-video-link{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;background:#13202a;color:#fff!important;text-decoration:none!important}.myblogs-video-link img{display:block;width:100%;height:100%;object-fit:cover;opacity:.86}.myblogs-video-link span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 15px;border-radius:999px;background:#c90024;color:#fff;font:700 13px Arial,sans-serif;white-space:nowrap}
-    @media(max-width:600px){.platform-bar,.site-head{min-height:54px!important;padding:12px 14px!important}.blog-banner{height:170px!important;min-height:170px!important;padding:16px 14px!important;gap:12px!important;font-size:18px!important}.blog-banner+main,.blog-banner+.layout{margin-top:-88px!important}.platform-footer{min-height:54px!important;margin-top:24px!important;padding:16px 14px!important;font-size:12px!important}}
+    @media(max-width:600px){.platform-bar,.site-head{min-height:54px!important;padding:12px 14px!important}.platform-footer{min-height:54px!important;margin-top:24px!important;padding:16px 14px!important;font-size:12px!important}}
   </style>`;
   html = html.replace(/<\/head>/i, `${chromeStyle}<base href="${escapeHtml(fileBase)}"></head>`);
 
-  const unifiedBanner = `<div class="blog-banner"><a class="blog-back" href="${escapeHtml(appHome)}" target="_top" data-myblogs-home aria-label="Volver a My Blogs">←</a><span>${escapeHtml(blog.title)}</span><span class="search-mark" aria-hidden="true">⌕</span></div>`;
-  const currentBanner = findHtmlElementByClass(html, ['blog-banner', 'blog-header']);
-  if (currentBanner) {
-    html = replaceHtmlElement(html, currentBanner, unifiedBanner);
-  } else {
-    const topBar = findHtmlElementByClass(html, ['platform-bar', 'site-head']);
-    if (topBar) html = `${html.slice(0, topBar.end)}${unifiedBanner}${html.slice(topBar.end)}`;
-    else html = html.replace(/<body\b[^>]*>/i, match => `${match}${unifiedBanner}`);
-  }
+  html = html.replace(/<a\b[^>]*class=(['"])[^'"]*\bblog-back\b[^'"]*\1[^>]*>/gi, tag => {
+    const withoutHomeMarker = tag.replace(/\sdata-myblogs-home(?:=(['"])[^'"]*\1)?/i, '');
+    const withHome = withoutHomeMarker.replace(/\shref=(['"])[^'"]*\1/i, ` href="${escapeHtml(appHome)}"`);
+    return withHome.replace(/\s+target=(['"])[^'"]*\1/i, '').replace(/>$/, ' target="_top" data-myblogs-home>');
+  });
 
   const attribution = findHtmlElementByClass(html, ['blogger-attribution']);
   if (attribution) html = replaceHtmlElement(html, attribution, '');

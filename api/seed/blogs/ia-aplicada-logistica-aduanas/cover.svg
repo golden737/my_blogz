@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-labelledby="title desc">
+  <title id="title">Inteligencia artificial en logística y aduanas</title>
+  <desc id="desc">Ilustración de rutas inteligentes, contenedores y análisis de datos para logística.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10243a"/><stop offset="1" stop-color="#075b68"/></linearGradient>
+    <linearGradient id="cyan" x1="0" x2="1"><stop stop-color="#55e0d2"/><stop offset="1" stop-color="#61a9ff"/></linearGradient>
+  </defs>
+  <rect width="1200" height="500" fill="url(#bg)"/>
+  <g fill="none" stroke="#73d9d2" stroke-opacity=".35" stroke-width="3"><path d="M676 89h86l38 38v42h65l39 39h214M680 406h104l42-42h76l40-40h178M850 69v63m-18 0h36M1095 282v61m-18 0h36"/><circle cx="676" cy="89" r="7" fill="#7ce7dc"/><circle cx="1112" cy="208" r="7" fill="#7ce7dc"/></g>
+  <g transform="translate(815 87)" stroke-linejoin="round">
+    <path d="M33 218h348l-38 65H81z" fill="#133f58" stroke="url(#cyan)" stroke-width="7"/>
+    <path d="M82 148h83v68H82zm94 0h82v68h-82zm93 0h74v68h-74z" fill="#35a6b3" stroke="#b0fff1" stroke-width="5"/>
+    <path d="M102 80h76v58h-76zm88 0h76v58h-76zm88 0h60v58h-60z" fill="#246a81" stroke="#8dece0" stroke-width="5"/>
+    <path d="M53 298h306M116 283v29m191-29v29" stroke="#b4f8ee" stroke-width="7" stroke-linecap="round"/>
+    <path d="M53 52c84-47 194-43 277 9" fill="none" stroke="#7de9dc" stroke-width="5" stroke-dasharray="8 12"/>
+    <circle cx="54" cy="52" r="13" fill="#7de9dc"/><circle cx="330" cy="61" r="13" fill="#8caaff"/>
+    <path d="m276 42 25 20-26 19" fill="none" stroke="#8caaff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="68" y="145" fill="#7de9dc" font-family="Arial,sans-serif" font-size="21" font-weight="700" letter-spacing="3">TECNOLOGÍA · COMERCIO · CONEXIONES</text>
+  <text x="62" y="250" fill="#fff" font-family="Arial,sans-serif" font-size="65" font-weight="800">Logística</text>
+  <text x="62" y="330" fill="#fff" font-family="Arial,sans-serif" font-size="65" font-weight="800">inteligente</text>
+  <text x="68" y="387" fill="#d2e7eb" font-family="Arial,sans-serif" font-size="25">IA para rutas, aduanas y cadenas de suministro</text>
+  <rect x="68" y="426" width="148" height="7" rx="3.5" fill="url(#cyan)"/>
+</svg>

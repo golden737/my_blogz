@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-labelledby="title desc">
+  <title id="title">Educación de computación cuántica</title>
+  <desc id="desc">Ilustración tecnológica de un procesador cuántico y órbitas de qubits.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071a38"/><stop offset="1" stop-color="#28215c"/></linearGradient>
+    <linearGradient id="glow" x1="0" x2="1"><stop stop-color="#37d5c5"/><stop offset="1" stop-color="#9b8cff"/></linearGradient>
+    <radialGradient id="core"><stop stop-color="#fff"/><stop offset=".25" stop-color="#8bf4e9"/><stop offset="1" stop-color="#38a9d4" stop-opacity=".08"/></radialGradient>
+  </defs>
+  <rect width="1200" height="500" fill="url(#bg)"/>
+  <g fill="none" stroke="#6da8ff" stroke-opacity=".3" stroke-width="3"><path d="M690 82h86l32 32v52h64l36 36h196M704 414h78l44-44h70l34-34h170M835 70v66m-18 0h36M1081 312v58m-18 0h36"/><circle cx="690" cy="82" r="7" fill="#7de7dc"/><circle cx="1102" cy="202" r="7" fill="#7de7dc"/></g>
+  <g transform="translate(842 95)">
+    <circle cx="150" cy="150" r="133" fill="#ffffff" fill-opacity=".03" stroke="url(#glow)" stroke-width="5"/>
+    <ellipse cx="150" cy="150" rx="112" ry="43" fill="none" stroke="#9b8cff" stroke-width="5" transform="rotate(42 150 150)"/>
+    <ellipse cx="150" cy="150" rx="112" ry="43" fill="none" stroke="#44d9d0" stroke-width="5" transform="rotate(-42 150 150)"/>
+    <circle cx="150" cy="150" r="48" fill="url(#core)"/>
+    <circle cx="83" cy="77" r="11" fill="#b7a9ff"/><circle cx="219" cy="81" r="11" fill="#55e7d9"/><circle cx="149" cy="264" r="11" fill="#b7a9ff"/>
+    <text x="150" y="164" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="40" font-weight="800">QUBIT</text>
+  </g>
+  <text x="68" y="153" fill="#75e7dc" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="4">CIENCIA · UNIVERSIDAD · FUTURO</text>
+  <text x="62" y="260" fill="#fff" font-family="Arial,sans-serif" font-size="66" font-weight="800">Computación</text>
+  <text x="62" y="340" fill="#fff" font-family="Arial,sans-serif" font-size="66" font-weight="800">cuántica</text>
+  <text x="68" y="393" fill="#c9d8f2" font-family="Arial,sans-serif" font-size="25">Una nueva frontera para la educación superior</text>
+  <rect x="68" y="430" width="148" height="7" rx="3.5" fill="url(#glow)"/>
+</svg>

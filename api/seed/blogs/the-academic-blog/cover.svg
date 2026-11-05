@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-labelledby="title desc">
+  <title id="title">The Academic Blog</title>
+  <desc id="desc">Portada ilustrada sobre privacidad, datos personales e inteligencia artificial.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102b52"/><stop offset="1" stop-color="#176a82"/></linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#73ecdc"/><stop offset="1" stop-color="#60a8ff"/></linearGradient>
+    <linearGradient id="screen" x1="0" x2="1"><stop stop-color="#143653"/><stop offset="1" stop-color="#1d5573"/></linearGradient>
+  </defs>
+  <rect width="1200" height="500" fill="url(#bg)"/>
+  <g fill="none" stroke="#8fe7e0" stroke-opacity=".32" stroke-width="3"><path d="M700 90h75l34 34v30h74l39 39h185M703 405h90l40-40h77l38-38h181M867 74v59m-18 0h36M1092 274v61m-18 0h36"/><circle cx="700" cy="90" r="7" fill="#8fe7e0"/><circle cx="1092" cy="194" r="7" fill="#79b9ff"/></g>
+  <g transform="translate(865 77)">
+    <path d="M145 0 270 48v91c0 91-55 160-125 190C75 299 20 230 20 139V48z" fill="#ffffff" fill-opacity=".07" stroke="url(#shield)" stroke-width="9"/>
+    <path d="M145 67a48 48 0 0 0-48 48v31h96v-31a48 48 0 0 0-48-48z" fill="none" stroke="#d9fff8" stroke-width="10"/>
+    <rect x="72" y="141" width="146" height="105" rx="17" fill="url(#screen)" stroke="#79e9df" stroke-width="7"/>
+    <circle cx="145" cy="184" r="13" fill="#fff"/><path d="M145 196v22" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="52" cy="72" r="7" fill="#89f0e1"/><circle cx="239" cy="88" r="7" fill="#89f0e1"/><circle cx="68" cy="262" r="7" fill="#89f0e1"/>
+  </g>
+  <text x="68" y="153" fill="#8cf0e1" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="4">PRIVACIDAD · DATOS · INTELIGENCIA ARTIFICIAL</text>
+  <text x="62" y="270" fill="#fff" font-family="Arial,sans-serif" font-size="68" font-weight="800">Privacidad</text>
+  <text x="62" y="350" fill="#fff" font-family="Arial,sans-serif" font-size="68" font-weight="800">en la era de la IA</text>
+  <text x="68" y="401" fill="#d6e8f4" font-family="Arial,sans-serif" font-size="25">Proteger los datos también es innovar</text>
+  <rect x="68" y="431" width="148" height="7" rx="3.5" fill="url(#shield)"/>
+</svg>

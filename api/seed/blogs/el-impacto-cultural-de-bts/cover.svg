@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-labelledby="title desc">
+  <title id="title">El impacto cultural de BTS</title>
+  <desc id="desc">Ilustración musical sobre BTS, identidad, empatía y la campaña Love Myself.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#35102f"/><stop offset=".55" stop-color="#8e285e"/><stop offset="1" stop-color="#e16b8b"/></linearGradient>
+    <linearGradient id="pink" x1="0" x2="1"><stop stop-color="#ffd0df"/><stop offset="1" stop-color="#ff9fbf"/></linearGradient>
+  </defs>
+  <rect width="1200" height="500" fill="url(#bg)"/>
+  <g fill="none" stroke="#ffc7dc" stroke-opacity=".35" stroke-width="3"><path d="M700 90h78l36 36v42h75l38 38h185M711 403h85l42-42h72l42-42h176M874 69v61m-18 0h36M1104 275v59m-18 0h36"/><circle cx="700" cy="90" r="7" fill="#ffd4e1"/><circle cx="1112" cy="207" r="7" fill="#ffd4e1"/></g>
+  <g transform="translate(820 71)">
+    <circle cx="185" cy="185" r="154" fill="#fff" fill-opacity=".05" stroke="url(#pink)" stroke-width="7"/>
+    <circle cx="185" cy="185" r="119" fill="none" stroke="#ffd7e4" stroke-opacity=".6" stroke-width="3" stroke-dasharray="8 12"/>
+    <path d="M175 75v156c-10-10-25-16-41-16-30 0-53 20-53 47s23 48 53 48 54-21 54-48V137l89-22v104c-10-10-25-16-41-16-30 0-53 20-53 47s23 48 53 48 54-21 54-48V78z" fill="#fff" opacity=".92"/>
+    <path d="M49 183c28-35 44-53 68-64m258 108c24-21 37-38 47-64" fill="none" stroke="#ffbad1" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="68" cy="173" r="8" fill="#fff"/><circle cx="436" cy="151" r="8" fill="#fff"/>
+  </g>
+  <text x="68" y="153" fill="#ffd4e1" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="4">MÚSICA · IDENTIDAD · EMPATÍA</text>
+  <text x="62" y="270" fill="#fff" font-family="Arial,sans-serif" font-size="76" font-weight="800">BTS</text>
+  <text x="62" y="350" fill="#fff" font-family="Arial,sans-serif" font-size="56" font-weight="800">Música que conecta culturas</text>
+  <text x="68" y="403" fill="#ffe4ec" font-family="Arial,sans-serif" font-size="25">Love Myself · Salud mental · Cambio social</text>
+  <rect x="68" y="431" width="148" height="7" rx="3.5" fill="url(#pink)"/>
+</svg>
