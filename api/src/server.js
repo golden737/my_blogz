@@ -267,12 +267,37 @@ app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
   const fileBase = `${apiBase}/api/blog-files/${encodeURIComponent(blog.slug)}/`;
   const siteBase = SITE_BASE_URL.endsWith('/') ? SITE_BASE_URL : `${SITE_BASE_URL}/`;
   let html = blog.content.toString('utf8');
+  const styleRows = await pool.query(
+    "SELECT path,content FROM blog_files WHERE blog_id=$1 AND LOWER(path) LIKE '%.css'",
+    [blog.id]
+  );
+  const styles = new Map(styleRows.rows.map(row => [row.path, row.content.toString('utf8')]));
   html = html.replace(/\{\{BLOG_AUTHOR\}\}/g, escapeHtml(blog.author_name || 'Autor del blog'));
   // This wrapper was added for portal navigation and duplicated the app chrome
   // above the article. Keep the article's own Blogger header as its page header.
   html = html.replace(/<header\b[^>]*class=(['"])[^'"]*\bplatform-bar\b[^'"]*\1[^>]*>[\s\S]*?<\/header>/i, '');
   html = html.replace(/<base\b[^>]*>/gi, '');
   html = html.replace(/href=(['"])(?:\.\.\/)+(?:\1)/gi, `href="${escapeHtml(siteBase)}"`);
+  // srcdoc is sandboxed with an opaque origin. Inline each packaged stylesheet
+  // so the browser can apply the original design without granting same-origin
+  // access to the embedded blog.
+  html = html.replace(/<link\b[^>]*rel=(['"])stylesheet\1[^>]*>/gi, tag => {
+    const href = tag.match(/\bhref=(['"])(.*?)\1/i)?.[2];
+    if (!href || /^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(href)) return tag;
+    const stylePath = path.posix.normalize(path.posix.join(path.posix.dirname('index.html'), href));
+    const source = styles.get(stylePath);
+    if (!source) return tag;
+    const css = source.replace(/url\(\s*(['"]?)(.*?)\1\s*\)/gi, (match, quote, value) => {
+      const asset = String(value).trim();
+      if (!asset || /^(?:data:|https?:|\/\/|#)/i.test(asset)) return match;
+      const [assetPath, suffix = ''] = asset.split(/(?=[?#])/, 2);
+      const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(stylePath), assetPath));
+      if (resolved === '..' || resolved.startsWith('../')) return match;
+      const assetUrl = `${fileBase}${resolved.split('/').map(encodeURIComponent).join('/')}${suffix}`;
+      return `url("${assetUrl}")`;
+    }).replace(/<\/style/gi, '<\\/style');
+    return `<style>${css}</style>`;
+  });
   html = html.replace(/<\/head>/i, `<base href="${escapeHtml(fileBase)}"></head>`);
   res.json({ html });
 }));

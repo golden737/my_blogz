@@ -76,7 +76,9 @@ export async function seedPackagedBlogs() {
         const contentType = contentTypeFor(file.relative);
         await client.query(
           `INSERT INTO blog_files(blog_id,path,content_type,content,byte_length)
-           VALUES($1,$2,$3,$4,$5) ON CONFLICT(blog_id,path) DO NOTHING`,
+          VALUES($1,$2,$3,$4,$5)
+          ON CONFLICT(blog_id,path) DO UPDATE SET
+            content_type=EXCLUDED.content_type,content=EXCLUDED.content,byte_length=EXCLUDED.byte_length`,
           [found.id, file.relative, contentType, content, content.length]
         );
       }
