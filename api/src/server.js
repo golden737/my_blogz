@@ -433,7 +433,7 @@ app.post('/api/admin/blogs', authenticate, requireRole('editor', 'super_admin'),
     await client.query('BEGIN');
     const inserted = await client.query(
       `INSERT INTO blogs(admin_id,title,slug,description,author_name,source_platform,original_url,integration_mode,cover_image,status,is_featured,published_at)
-       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,CASE WHEN $10='published' THEN NOW() ELSE NULL END) RETURNING id`,
+       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,CASE WHEN $10::varchar='published' THEN NOW() ELSE NULL END) RETURNING id`,
       [req.user.id,title,slug,String(body.description||''),String(body.author_name||''),String(body.source_platform||'other'),originalUrl,mode,coverImage,status,body.is_featured==='true'||body.is_featured==='1']
     );
     const id = inserted.rows[0].id;
