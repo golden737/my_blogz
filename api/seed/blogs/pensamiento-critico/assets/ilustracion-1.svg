@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" role="img" aria-labelledby="title desc">
+  <title id="title">Pensamiento crítico y tecnología</title><desc id="desc">Una persona analiza dos perspectivas digitales con su teléfono.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#162e50"/><stop offset=".52" stop-color="#405d80"/><stop offset="1" stop-color="#f1b45b"/></linearGradient>
+    <linearGradient id="face" x2="1"><stop stop-color="#d7a77f"/><stop offset=".49" stop-color="#f3c8a0"/><stop offset=".51" stop-color="#e6b58f"/><stop offset="1" stop-color="#b87c57"/></linearGradient>
+    <linearGradient id="shirt" x2="0" y2="1"><stop stop-color="#223c60"/><stop offset="1" stop-color="#101f36"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.6"><feGaussianBlur stdDeviation="16"/></filter>
+  </defs>
+  <rect width="960" height="620" rx="26" fill="url(#bg)"/><circle cx="190" cy="170" r="150" fill="#76c9eb" opacity=".11"/><circle cx="785" cy="152" r="170" fill="#ffe1a1" opacity=".18"/>
+  <g opacity=".68" fill="none" stroke="#c7e9ff" stroke-width="4"><path d="M55 95h130v72H55zm0 105h83m-83 22h117M760 84h135v76H760zm0 111h100m-100 23h76"/><circle cx="98" cy="131" r="13"/><path d="m84 153 14-15 15 15"/><circle cx="822" cy="123" r="23"/><path d="M822 98v50m-25-25h50"/></g>
+  <ellipse cx="485" cy="528" rx="236" ry="38" fill="#061425" opacity=".35" filter="url(#shadow)"/>
+  <path d="M244 620c18-119 91-174 236-174s218 55 236 174" fill="url(#shirt)"/>
+  <path d="M428 369h105v116H428z" fill="#d59b76"/><path d="M362 259c0-117 52-181 122-181s122 64 122 181c0 102-56 178-122 178s-122-76-122-178" fill="url(#face)"/>
+  <path d="M357 270c-13-124 26-228 136-228 105 0 144 89 130 224l-35-69-33-70c-44 47-115 79-195 79l-2 64z" fill="#1e2433"/><path d="M368 237c-38-38-26-107 9-131 12 34 18 69 11 106m222 28c38-38 26-107-9-131-12 34-18 69-11 106" fill="#252a38"/>
+  <path d="M405 267q24-19 48 0m59 0q24-19 48 0" fill="none" stroke="#49372f" stroke-width="8" stroke-linecap="round"/><ellipse cx="430" cy="291" rx="8" ry="11" fill="#26364a"/><ellipse cx="536" cy="291" rx="8" ry="11" fill="#26364a"/><path d="M477 293q-15 40 4 44m-38 30q34 24 68 0" fill="none" stroke="#965f4d" stroke-width="6" stroke-linecap="round"/>
+  <path d="M410 473c26-25 57-36 80-36s54 11 80 36l-29 52H439z" fill="#f3f3ee"/>
+  <g transform="rotate(-8 488 534)"><rect x="440" y="472" width="96" height="137" rx="17" fill="#111923" stroke="#d6e1e6" stroke-width="5"/><rect x="449" y="485" width="78" height="111" rx="10" fill="#a4e4ee"/><circle cx="488" cy="538" r="22" fill="#386b8d"/><path d="M476 538h24m-12-12v24" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+  <g fill="#fff"><circle cx="260" cy="307" r="5"/><circle cx="290" cy="344" r="4"/><circle cx="694" cy="278" r="5"/><circle cx="670" cy="327" r="4"/></g>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" role="img" aria-labelledby="title desc">
+  <title id="title">Pensamiento crítico en la era digital</title><desc id="desc">Un cerebro conectado aparece sobre una pantalla de teléfono entre señales de información.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f1c88b"/><stop offset="1" stop-color="#dc9b62"/></linearGradient><linearGradient id="phone" x2="0" y2="1"><stop stop-color="#36c7d0"/><stop offset="1" stop-color="#176e92"/></linearGradient><linearGradient id="brain" x2="1" y2="1"><stop stop-color="#f77d8a"/><stop offset="1" stop-color="#c8395a"/></linearGradient></defs>
+  <rect width="960" height="620" rx="24" fill="url(#bg)"/><circle cx="480" cy="295" r="223" fill="#ffe2a8" opacity=".32"/>
+  <g stroke="#70523f" stroke-width="12" stroke-linecap="round" fill="none"><path d="m213 189-40-35m58 20-14-55m-22 278-52 13m65-7-31 49m567-274 48-34m-67 20 21-62m28 292 58 11m-69-4 38 48"/></g>
+  <g fill="#e35963"><path d="m130 128 24-39 24 39h-20v31h-8v-31z"/><path d="M793 120h46v46h-46z"/><path d="m139 448 26-45 26 45z"/></g><g fill="#49778a"><circle cx="237" cy="103" r="13"/><circle cx="737" cy="480" r="15"/><path d="M778 430h42v9h-42zm15-15h12v39h-12z"/></g>
+  <g transform="rotate(-7 485 375)"><rect x="334" y="205" width="292" height="352" rx="40" fill="#172b40" stroke="#30475a" stroke-width="12"/><rect x="351" y="231" width="258" height="294" rx="26" fill="url(#phone)"/><rect x="438" y="216" width="86" height="9" rx="5" fill="#6b7d88"/><circle cx="480" cy="541" r="10" fill="#8cabb2"/>
+    <path d="M483 284c-38-48-100-24-91 26-36 19-30 69 5 79-6 44 45 67 76 40 30 27 81 4 75-40 35-10 41-60 5-79 9-50-53-74-90-26z" fill="url(#brain)" stroke="#8f3248" stroke-width="7"/>
+    <path d="M480 278v148m-2-116q-44-20-58 17m61 12q41-22 60 12m-62 18q-43-18-59 18m60-1q35-12 52 18m-53-96q-18 6-22 26m45 3q-16 10-18 26" fill="none" stroke="#ffb0a9" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="393" cy="308" r="8" fill="#ffe9b8"/><circle cx="568" cy="320" r="8" fill="#ffe9b8"/><circle cx="412" cy="399" r="7" fill="#ffe9b8"/><circle cx="551" cy="412" r="7" fill="#ffe9b8"/></g>
+  <g fill="none" stroke="#fff1cc" stroke-width="7" stroke-linecap="round"><path d="M249 283q-44 53 0 106m462-106q44 53 0 106M303 151q39-37 78 0m198 0q39-37 78 0"/></g>
+  <g fill="#fff5db"><circle cx="287" cy="212" r="7"/><circle cx="674" cy="210" r="7"/><circle cx="283" cy="441" r="7"/><circle cx="679" cy="440" r="7"/></g>
+</svg>
