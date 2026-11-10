@@ -59,6 +59,8 @@ const coverCorrections = [
   ['%lactancia materna%', 'lactancia-materna'],
   ['%soledad silenciosa juvenil%', 'siglo-xxi-soledad-silenciosa-juvenil'],
   ['%impacto de las redes sociales en el tiempo libre%', 'jovenes-desconectados'],
+  ['%Jóvenes desconectados%', 'jovenes-desconectados'],
+  ['%Jovenes desconectados%', 'jovenes-desconectados'],
   ['%recuerdos en la industria%', 'recuerdos-en-la-industria'],
   ['%love yourself%', 'love-yourself']
 ];
