@@ -5,10 +5,12 @@ Esta versión sustituye el portal PHP/MySQL por una aplicación HTML/CSS/JavaScr
 ## Incluye
 
 - Los diez blogs finales que ya preparamos, con sus imágenes, hojas de estilo y páginas.
-- Catálogo con búsqueda y categorías.
+- Catálogo con búsqueda instantánea y categorías temáticas.
 - Login y roles `super_admin`, `editor` y `viewer`.
 - Panel para crear, editar y eliminar blogs, categorías y usuarios.
 - El nombre del campo **Autor** se coloca en el pie de cada blog al mostrarlo.
+- El panel de administración muestra diez blogs por página y permite filtrarlos mientras escribes.
+- Los cinco blogs recientes con portadas SVG reciben sus portadas y categorías al iniciar el API, actualizando las fichas existentes por título.
 - La subida de un ZIP guarda sus archivos dentro de Neon. No depende del disco temporal de Render.
 - API con JWT, validación de ZIP, límites de tamaño, CORS y protección de contraseñas.
 
@@ -28,7 +30,7 @@ La URL principal de la aplicación será la de Render. GitHub Pages es opcional 
 3. No pongas esa URL en `frontend/config.js` ni en GitHub; se guarda como secreto en Render.
 4. Abre el **SQL Editor** de Neon, pega y ejecuta `database/neon_schema.sql`. Esto crea las tablas y categorías de My Blogs.
 
-Al arrancar, Render agrega las diez fichas y sus archivos a Neon y crea el primer superadministrador usando las variables de entorno. No tienes que importar los blogs ni sus imágenes a mano.
+Al arrancar, Render agrega las diez fichas empaquetadas y sus archivos a Neon, aplica las categorías nuevas y actualiza las portadas SVG indicadas si las fichas ya existen. También crea el primer superadministrador usando las variables de entorno. No tienes que importar los blogs ni sus imágenes a mano.
 
 ## Crear My Blogs en Render
 

@@ -7,16 +7,60 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const seedRoot = path.resolve(here, '..', 'seed', 'blogs');
 
 const blogs = [
-  { title: 'Algoritmos bajo sospecha', slug: 'algoritmos-bajo-sospecha', description: 'El sesgo de la inteligencia artificial en el empleo.', author_name: 'Cesia Campos', original_url: '', categories: ['tecnologia'], folder: 'algoritmos-bajo-sospecha', cover: 'assets/pages/pagina-01.jpg', published_at: '2026-06-13' },
-  { title: 'El impacto cultural de BTS', slug: 'el-impacto-cultural-de-bts', description: 'La campaña Love Myself, la salud mental y el impacto cultural de BTS.', author_name: 'Keyri Gámez', original_url: '', categories: ['musica'], folder: 'el-impacto-cultural-de-bts', cover: 'cover.jpg', published_at: '2026-06-13' },
+  { title: 'Algoritmos bajo sospecha', slug: 'algoritmos-bajo-sospecha', description: 'El sesgo de la inteligencia artificial en el empleo.', author_name: 'Cesia Campos', original_url: '', categories: ['tecnologia', 'negocios'], folder: 'algoritmos-bajo-sospecha', cover: 'assets/pages/pagina-01.jpg', published_at: '2026-06-13' },
+  { title: 'El impacto cultural de BTS', slug: 'el-impacto-cultural-de-bts', description: 'La campaña Love Myself, la salud mental y el impacto cultural de BTS.', author_name: 'Keyri Gámez', original_url: '', categories: ['musica', 'cultura'], folder: 'el-impacto-cultural-de-bts', cover: 'cover.jpg', published_at: '2026-06-13' },
   { title: 'Pensamiento crítico', slug: 'pensamiento-critico', description: 'El pensamiento crítico en la sociedad contemporánea.', author_name: 'Paola Abrego', original_url: 'https://tecnologiapensamientocritico2026.blogspot.com/', categories: ['educacion'], folder: 'pensamiento-critico', cover: 'cover.jpg', published_at: '2026-06-15' },
-  { title: 'Las vaquitas marinas necesitan tu ayuda', slug: 'vaquitas-marinas', description: 'La conservación de la vaquita marina y las amenazas que enfrenta.', author_name: 'Deysi Ramos', original_url: 'https://lasvaquitasmarinasnecesitantuayuda.blogspot.com/', categories: ['otros'], folder: 'vaquitas-marinas', cover: 'cover.svg', published_at: '2026-06-13' },
-  { title: 'Raíces sin tierra', slug: 'raices-sin-tierra', description: 'La cultura salvadoreña y las raíces silenciadas durante el Martinato.', author_name: '', original_url: 'https://raicessintierra.blogspot.com/', categories: ['educacion'], folder: 'raices-sin-tierra', cover: 'cover.svg', published_at: '2026-06-14' },
-  { title: 'El rugido del clima', slug: 'el-rugido-del-clima', description: 'Cómo el calentamiento global intensifica los fenómenos meteorológicos extremos.', author_name: 'Mayra Gómez', original_url: 'https://mayragomez1218.blogspot.com/', categories: ['otros'], folder: 'el-rugido-del-clima', cover: 'cover.svg', published_at: '2026-06-13' },
-  { title: 'I(nteligencia) A(utónoma) en 5 Minutos', slug: 'ia-en-5-minutos', description: 'Inteligencia artificial en el sistema educativo salvadoreño.', author_name: 'Eduardo Romero', original_url: 'https://iaen5minutos.blogspot.com/', categories: ['tecnologia'], folder: 'ia-en-5-minutos', cover: 'cover.svg', published_at: '2026-06-13' },
+  { title: 'Las vaquitas marinas necesitan tu ayuda', slug: 'vaquitas-marinas', description: 'La conservación de la vaquita marina y las amenazas que enfrenta.', author_name: 'Deysi Ramos', original_url: 'https://lasvaquitasmarinasnecesitantuayuda.blogspot.com/', categories: ['medio-ambiente'], folder: 'vaquitas-marinas', cover: 'cover.svg', published_at: '2026-06-13' },
+  { title: 'Raíces sin tierra', slug: 'raices-sin-tierra', description: 'La cultura salvadoreña y las raíces silenciadas durante el Martinato.', author_name: '', original_url: 'https://raicessintierra.blogspot.com/', categories: ['historia-cultura'], folder: 'raices-sin-tierra', cover: 'cover.svg', published_at: '2026-06-14' },
+  { title: 'El rugido del clima', slug: 'el-rugido-del-clima', description: 'Cómo el calentamiento global intensifica los fenómenos meteorológicos extremos.', author_name: 'Mayra Gómez', original_url: 'https://mayragomez1218.blogspot.com/', categories: ['medio-ambiente'], folder: 'el-rugido-del-clima', cover: 'cover.svg', published_at: '2026-06-13' },
+  { title: 'I(nteligencia) A(utónoma) en 5 Minutos', slug: 'ia-en-5-minutos', description: 'Inteligencia artificial en el sistema educativo salvadoreño.', author_name: 'Eduardo Romero', original_url: 'https://iaen5minutos.blogspot.com/', categories: ['tecnologia', 'educacion'], folder: 'ia-en-5-minutos', cover: 'cover.svg', published_at: '2026-06-13' },
   { title: 'Educación de computación cuántica', slug: 'educacion-computacion-cuantica', description: 'La educación en computación cuántica y su integración gradual en las universidades.', author_name: 'Fredy Gutiérrez', original_url: 'https://fredygutierrezc2.blogspot.com/', categories: ['tecnologia', 'educacion'], folder: 'educacion-computacion-cuantica', cover: 'cover.jpg', published_at: '2026-06-13' },
   { title: 'The Academic Blog', slug: 'the-academic-blog', description: 'Protección de la privacidad de los usuarios ante el avance de la inteligencia artificial.', author_name: '', original_url: 'https://exelyntheacademy.blogspot.com/', categories: ['tecnologia'], folder: 'the-academic-blog', cover: 'cover.jpg', published_at: '2026-06-13' },
-  { title: 'El impacto de la IA aplicada a la logística y aduanas', slug: 'ia-aplicada-logistica-aduanas', description: 'La inteligencia artificial aplicada a la logística y las aduanas.', author_name: '', original_url: 'https://elvismerazlogistica.blogspot.com/', categories: ['tecnologia'], folder: 'ia-aplicada-logistica-aduanas', cover: 'cover.jpg', published_at: '2026-06-13' }
+  { title: 'El impacto de la IA aplicada a la logística y aduanas', slug: 'ia-aplicada-logistica-aduanas', description: 'La inteligencia artificial aplicada a la logística y las aduanas.', author_name: '', original_url: 'https://elvismerazlogistica.blogspot.com/', categories: ['tecnologia', 'negocios'], folder: 'ia-aplicada-logistica-aduanas', cover: 'cover.jpg', published_at: '2026-06-13' }
+];
+
+const categoryCatalog = [
+  ['salud-bienestar', 'Salud y bienestar', 'Salud emocional, bienestar y cuidado.'],
+  ['medio-ambiente', 'Medio ambiente', 'Naturaleza, conservación y cambio climático.'],
+  ['historia-cultura', 'Historia y cultura', 'Historia, identidad y expresiones culturales.'],
+  ['cultura', 'Cultura', 'Cultura digital, medios y expresiones sociales.'],
+  ['negocios', 'Negocios', 'Emprendimiento, comercio y actividad económica.']
+];
+
+const categoryCorrections = [
+  ['%impacto de las redes sociales en los jóvenes%', ['estilo-de-vida', 'educacion']],
+  ['%impacto de las redes sociales en el tiempo libre%', ['estilo-de-vida', 'educacion']],
+  ['%recuerdos en la industria%', ['cultura', 'negocios']],
+  ['%love yourself%', ['musica', 'salud-bienestar']],
+  ['%lactancia materna%', ['salud-bienestar']],
+  ['%soledad silenciosa juvenil%', ['salud-bienestar', 'estilo-de-vida']],
+  ['%el mundo en llamas%', ['medio-ambiente']],
+  ['%tradiciones de la cultura maya%', ['historia-cultura']],
+  ['%negocio del conflicto%', ['tecnologia', 'cultura']],
+  ['%crisis de la atención%', ['educacion', 'salud-bienestar']],
+  ['%productividad tóxica%', ['salud-bienestar', 'educacion']],
+  ['%memificación de la realidad%', ['cultura', 'tecnologia']],
+  ['%pizarrón a la pantalla%', ['educacion', 'tecnologia']],
+  ['%redes sociales como factor de riesgo%', ['salud-bienestar', 'tecnologia']],
+  ['%edición del genoma%', ['tecnologia', 'salud-bienestar']],
+  ['%redes sociales pesan más%', ['salud-bienestar', 'estilo-de-vida']],
+  ['%influencia de la música en nuestras emociones%', ['musica', 'salud-bienestar']],
+  ['%vitrinas digitales%', ['negocios', 'tecnologia']],
+  ['%cemento sobre el acuífero%', ['medio-ambiente', 'tecnologia']],
+  ['%embajadores culturales%', ['cultura', 'musica']],
+  ['%pérdida de las tradiciones%', ['historia-cultura']],
+  ['%genoma%crispr%', ['tecnologia', 'salud-bienestar']],
+  ['%estetización de la vida diaria%', ['cultura', 'estilo-de-vida']],
+  ['%era cuántica de la medicina%', ['tecnologia', 'salud-bienestar']],
+  ['%inteligencia artificial mejora el aprendizaje%', ['educacion', 'tecnologia']]
+];
+
+const coverCorrections = [
+  ['%lactancia materna%', 'lactancia-materna'],
+  ['%soledad silenciosa juvenil%', 'siglo-xxi-soledad-silenciosa-juvenil'],
+  ['%impacto de las redes sociales en el tiempo libre%', 'jovenes-desconectados'],
+  ['%recuerdos en la industria%', 'recuerdos-en-la-industria'],
+  ['%love yourself%', 'love-yourself']
 ];
 
 const obsoleteCoverUrls = {
@@ -38,6 +82,25 @@ async function walkFiles(dir, prefix = '') {
 export async function seedPackagedBlogs() {
   const client = await pool.connect();
   try {
+    for (const [slug, name, description] of categoryCatalog) {
+      await client.query(
+        `INSERT INTO categories(name,slug,description) VALUES($1,$2,$3)
+         ON CONFLICT(slug) DO UPDATE SET name=EXCLUDED.name,description=EXCLUDED.description`,
+        [name, slug, description]
+      );
+    }
+    const categoryRows = await client.query('SELECT id,slug FROM categories');
+    const categoryIds = new Map(categoryRows.rows.map(row => [row.slug, row.id]));
+    const replaceCategories = async (blogId, slugs) => {
+      await client.query('DELETE FROM blog_categories WHERE blog_id=$1', [blogId]);
+      for (const slug of slugs) {
+        const categoryId = categoryIds.get(slug);
+        if (categoryId) await client.query(
+          'INSERT INTO blog_categories(blog_id,category_id) VALUES($1,$2) ON CONFLICT DO NOTHING',
+          [blogId, categoryId]
+        );
+      }
+    };
     await client.query(`CREATE TABLE IF NOT EXISTS app_migrations (
       migration_key TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`);
@@ -59,6 +122,7 @@ export async function seedPackagedBlogs() {
       const found = inserted.rows[0]
         ? inserted.rows[0]
         : (await client.query('SELECT id FROM blogs WHERE slug=$1', [item.slug])).rows[0];
+      await replaceCategories(found.id, item.categories);
       const obsoleteCoverUrl = obsoleteCoverUrls[item.slug];
       if (obsoleteCoverUrl) {
         await client.query(
@@ -93,6 +157,30 @@ export async function seedPackagedBlogs() {
         );
       }
       await client.query('COMMIT');
+    }
+
+    // Reassign categories for previously added panel blogs as well, so the
+    // published catalog no longer leaves known topics under the generic tag.
+    for (const [titlePattern, slugs] of categoryCorrections) {
+      const matchingBlogs = await client.query('SELECT id FROM blogs WHERE title ILIKE $1', [titlePattern]);
+      for (const blog of matchingBlogs.rows) await replaceCategories(blog.id, slugs);
+    }
+
+    // Refresh local SVG covers for the five existing imported blogs. Matching
+    // their titles avoids creating duplicate blog records if a panel slug varies.
+    for (const [titlePattern, folder] of coverCorrections) {
+      const matches = await client.query('SELECT id FROM blogs WHERE title ILIKE $1', [titlePattern]);
+      const cover = await readFile(path.join(seedRoot, folder, 'cover.svg'));
+      for (const blog of matches.rows) {
+        await client.query('UPDATE blogs SET cover_image=NULL WHERE id=$1', [blog.id]);
+        await client.query(
+          `INSERT INTO blog_files(blog_id,path,content_type,content,byte_length)
+           VALUES($1,'cover.svg','image/svg+xml',$2,$3)
+           ON CONFLICT(blog_id,path) DO UPDATE SET content_type=EXCLUDED.content_type,
+             content=EXCLUDED.content,byte_length=EXCLUDED.byte_length`,
+          [blog.id, cover, cover.length]
+        );
+      }
     }
   } catch (error) {
     await client.query('ROLLBACK').catch(() => {});

@@ -3,7 +3,7 @@ const API = String(CONFIG.apiBaseUrl || '').replace(/\/$/, '');
 const SITE = CONFIG.siteBaseUrl || './';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null, blogs: [], categories: [], search: '', category: '', editBlog: null, editUser: null, scrollTarget: '' };
+const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null, blogs: [], categories: [], search: '', category: '', editBlog: null, editUser: null, scrollTarget: '', adminBlogQuery: '', adminBlogPage: 0 };
 
 window.addEventListener('message', event => {
   const frame = $('#blogReader iframe');
@@ -114,7 +114,7 @@ function renderBlogCard(blog) {
 }
 
 async function renderHome() {
-  await loadCatalog({ q: state.search, category: state.category });
+  await loadCatalog();
   $('#viewRoot').innerHTML = `
     <section class="hero">
       <div class="hero-shape shape-left"></div><div class="hero-shape shape-bottom"></div>
@@ -129,19 +129,39 @@ async function renderHome() {
         <button class="category-chip ${state.category === '' ? 'selected' : ''}" data-category="">Todos</button>
         ${state.categories.map(category => `<button class="category-chip ${String(category.id) === state.category ? 'selected' : ''}" data-category="${category.id}">${esc(category.name)}</button>`).join('')}
       </div>
-      ${(state.search || state.category) ? '<div class="results-heading"><h2>Resultados</h2><button class="clear-filter" id="clearFilter">Limpiar filtros ×</button></div>' : ''}
-      <div class="blog-grid">${state.blogs.length ? state.blogs.map(renderBlogCard).join('') : '<div class="empty-state"><span>⌕</span><h2>No encontramos blogs</h2><p>Prueba con otra búsqueda o selecciona otra categoría.</p><button class="button" id="showAll">Ver todos los blogs</button></div>'}</div>
+      <div class="results-heading" id="resultsHeading" hidden></div>
+      <div class="blog-grid" id="blogGrid"></div>
       <div class="closing-note"><span></span><b>◧</b><span></span><p>Cada blog es una nueva historia por descubrir</p></div>
     </section>`;
+  function paintResults() {
+    const query = state.search.trim().toLocaleLowerCase('es');
+    const filtered = state.blogs.filter(blog => {
+      const matchesQuery = !query || [blog.title, blog.description, blog.author_name, ...(blog.category_names || [])].some(value => String(value || '').toLocaleLowerCase('es').includes(query));
+      const matchesCategory = !state.category || (blog.category_ids || []).map(String).includes(String(state.category)) || (blog.category_names || []).some(name => String(name) === String(state.categories.find(item => String(item.id) === String(state.category))?.name));
+      return matchesQuery && matchesCategory;
+    });
+    const heading = $('#resultsHeading');
+    heading.hidden = !(state.search || state.category);
+    heading.innerHTML = heading.hidden ? '' : `<h2>${filtered.length} ${filtered.length === 1 ? 'resultado' : 'resultados'}</h2><button class="clear-filter" id="clearFilter" type="button">Limpiar filtros ×</button>`;
+    $('#blogGrid').innerHTML = filtered.length ? filtered.map(renderBlogCard).join('') : '<div class="empty-state"><span>⌕</span><h2>No encontramos blogs</h2><p>Prueba con otra búsqueda o selecciona otra categoría.</p><button class="button" id="showAll" type="button">Ver todos los blogs</button></div>';
+    $$('.category-chip').forEach(button => button.classList.toggle('selected', button.dataset.category === state.category));
+  }
+  paintResults();
   if (state.scrollTarget) {
     const target = document.getElementById(state.scrollTarget);
     state.scrollTarget = '';
     requestAnimationFrame(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   }
-  $('#searchForm').addEventListener('submit', async event => { event.preventDefault(); state.search = new FormData(event.currentTarget).get('q').trim(); state.category = ''; await renderHome(); });
-  $$('.category-chip').forEach(button => button.addEventListener('click', async () => { state.category = button.dataset.category; await renderHome(); document.querySelector('#blogs')?.scrollIntoView({ behavior: 'smooth' }); }));
-  $('#clearFilter')?.addEventListener('click', async () => { state.search = ''; state.category = ''; await renderHome(); });
-  $('#showAll')?.addEventListener('click', async () => { state.search = ''; state.category = ''; await renderHome(); });
+  const searchInput = $('#searchForm input[name=q]');
+  searchInput.addEventListener('input', () => { state.search = searchInput.value; paintResults(); });
+  $('#searchForm').addEventListener('submit', event => { event.preventDefault(); state.search = searchInput.value; paintResults(); });
+  $$('.category-chip').forEach(button => button.addEventListener('click', () => { state.category = button.dataset.category; paintResults(); document.querySelector('#blogs')?.scrollIntoView({ behavior: 'smooth' }); }));
+  $('#resultsHeading').addEventListener('click', event => {
+    if (event.target.closest('#clearFilter')) { state.search = ''; state.category = ''; searchInput.value = ''; paintResults(); }
+  });
+  $('#blogGrid').addEventListener('click', event => {
+    if (event.target.closest('#showAll')) { state.search = ''; state.category = ''; searchInput.value = ''; paintResults(); }
+  });
 }
 
 async function renderBlog(slug) {
@@ -232,6 +252,7 @@ async function renderAdmin(tab = 'blogs') {
 
 function renderBlogAdmin(blogs, categories) {
   const editing = state.editBlog;
+  state.adminBlogs = blogs;
   return `<div class="admin-columns">
     <section class="admin-panel" id="blog-form-panel"><h2>${editing ? 'Editar blog' : 'Agregar un blog'}</h2>
       <form id="blogForm" class="stack-form" enctype="multipart/form-data">
@@ -241,7 +262,7 @@ function renderBlogAdmin(blogs, categories) {
         <label>Descripción<textarea name="description" rows="3" placeholder="¿De qué trata este blog?">${esc(editing?.description || '')}</textarea></label>
         <label>Autor<input name="author_name" value="${esc(editing?.author_name || '')}" placeholder="Nombre del autor"><small class="form-help">Este nombre aparecerá en el pie del blog.</small></label>
         <label>URL original<input type="url" name="original_url" value="${esc(editing?.original_url || '')}" placeholder="https://..."></label>
-        <label>ZIP del blog local<input type="file" name="blog_zip" accept=".zip,application/zip"><small class="form-help">Debe contener index.html en la raíz. Añade cover.jpg en esa misma carpeta para su portada. Hasta 20 MB comprimido y 50 MB descomprimido.${editing ? ' Déjalo vacío para conservar los archivos actuales.' : ''}</small></label>
+        <label>ZIP del blog local<input type="file" name="blog_zip" accept=".zip,application/zip"><small class="form-help">Debe contener index.html en la raíz. Añade cover.svg o cover.jpg en esa misma carpeta para la portada. Hasta 20 MB comprimido y 50 MB descomprimido.${editing ? ' Déjalo vacío para conservar los archivos actuales.' : ''}</small></label>
         <label>Imagen de portada (opcional)<input type="url" name="cover_image" value="${esc(editing?.cover_image || '')}" placeholder="https://.../portada.jpg"><small class="form-help">Si indicas una URL, se usará en el catálogo. Así no se toma una imagen cualquiera del contenido.</small></label>
         <fieldset class="category-picker"><legend>Categorías</legend>${categories.map(category => `<label class="check-label"><input type="checkbox" name="category_ids" value="${category.id}" ${(editing?.category_ids || []).map(Number).includes(Number(category.id)) ? 'checked' : ''}> ${esc(category.name)}</label>`).join('') || '<small class="form-help">Primero crea una categoría.</small>'}</fieldset>
         <div class="form-two"><label>Plataforma<select name="source_platform">${optionList(['blogger','canva','wordpress','custom','other'], editing?.source_platform || 'other')}</select></label>
@@ -251,8 +272,21 @@ function renderBlogAdmin(blogs, categories) {
         <div class="form-two"><button class="button button-wide" type="submit">${editing ? 'Guardar cambios' : 'Guardar blog +'}</button>${editing ? '<button class="button-secondary" type="button" id="cancelBlogEdit">Cancelar</button>' : ''}</div>
       </form>
     </section>
-    <section class="admin-panel"><h2>Tus blogs</h2>${blogs.length ? `<div class="admin-list">${blogs.map(blog => `<div class="admin-list-item"><div class="admin-list-copy"><strong>${esc(blog.title)}</strong><small><span class="status-pill ${esc(blog.status)}">${esc(blog.status)}</span> · ${esc(blog.source_platform)}${blog.author_name ? ` · Por ${esc(blog.author_name)}` : ''}</small>${blog.original_url ? `<a class="admin-source-link" href="${esc(blog.original_url)}" target="_blank" rel="noopener noreferrer">Abrir sitio original ↗</a>` : ''}</div><div class="admin-list-actions"><button class="button button-small" data-edit-blog="${blog.id}">Editar</button><button class="danger-link" data-delete-blog="${blog.id}">Eliminar</button></div></div>`).join('')}</div>` : '<p class="muted">Todavía no hay blogs registrados.</p>'}</section>
+    <section class="admin-panel"><h2>Tus blogs</h2><label class="admin-search-label" for="adminBlogSearch">Buscar un blog</label><input id="adminBlogSearch" class="admin-search" type="search" value="${esc(state.adminBlogQuery)}" placeholder="Escribe título, autor o categoría…" autocomplete="off"><div id="adminBlogList"></div><div id="adminBlogPagination"></div></section>
   </div>`;
+}
+
+function paintAdminBlogList() {
+  const query = String(state.adminBlogQuery || '').trim().toLocaleLowerCase('es');
+  const filtered = (state.adminBlogs || []).filter(blog => [blog.title, blog.slug, blog.author_name, blog.description, blog.source_platform, ...(blog.category_names || [])]
+    .some(value => String(value || '').toLocaleLowerCase('es').includes(query)));
+  const pageSize = 10;
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  state.adminBlogPage = Math.min(Math.max(0, state.adminBlogPage), pageCount - 1);
+  const visible = filtered.slice(state.adminBlogPage * pageSize, (state.adminBlogPage + 1) * pageSize);
+  $('#adminBlogList').innerHTML = visible.length ? `<div class="admin-list">${visible.map(blog => `<div class="admin-list-item"><div class="admin-list-copy"><strong>${esc(blog.title)}</strong><small><span class="status-pill ${esc(blog.status)}">${esc(blog.status)}</span> · ${esc(blog.source_platform)}${blog.author_name ? ` · Por ${esc(blog.author_name)}` : ''}</small>${blog.category_names?.length ? `<small>Categoría: ${blog.category_names.map(esc).join(', ')}</small>` : ''}${blog.original_url ? `<a class="admin-source-link" href="${esc(blog.original_url)}" target="_blank" rel="noopener noreferrer">Abrir sitio original ↗</a>` : ''}</div><div class="admin-list-actions"><button class="button button-small" data-edit-blog="${blog.id}">Editar</button><button class="danger-link" data-delete-blog="${blog.id}">Eliminar</button></div></div>`).join('')}</div>` : `<p class="muted">${query ? 'No hay blogs que coincidan con la búsqueda.' : 'Todavía no hay blogs registrados.'}</p>`;
+  $('#adminBlogPagination').innerHTML = filtered.length > pageSize ? `<div class="admin-pagination"><span>${state.adminBlogPage * pageSize + 1}–${Math.min((state.adminBlogPage + 1) * pageSize, filtered.length)} de ${filtered.length}</span><div><button class="button-secondary" type="button" data-admin-page="${state.adminBlogPage - 1}" ${state.adminBlogPage === 0 ? 'disabled' : ''}>Anterior</button><button class="button-secondary" type="button" data-admin-page="${state.adminBlogPage + 1}" ${state.adminBlogPage >= pageCount - 1 ? 'disabled' : ''}>Siguiente</button></div></div>` : `<p class="admin-count">${filtered.length} ${filtered.length === 1 ? 'blog' : 'blogs'}</p>`;
+  bindAdminBlogActions();
 }
 
 function optionList(values, selected) {
@@ -261,6 +295,15 @@ function optionList(values, selected) {
 }
 
 function bindBlogAdmin() {
+  const adminSearch = $('#adminBlogSearch');
+  adminSearch.addEventListener('input', () => { state.adminBlogQuery = adminSearch.value; state.adminBlogPage = 0; paintAdminBlogList(); });
+  $('#adminBlogPagination').addEventListener('click', event => {
+    const button = event.target.closest('[data-admin-page]');
+    if (!button || button.disabled) return;
+    state.adminBlogPage = Number(button.dataset.adminPage);
+    paintAdminBlogList();
+  });
+  paintAdminBlogList();
   const form = $('#blogForm');
   const title = $('input[name=title]', form); const slug = $('input[name=slug]', form);
   title.addEventListener('input', () => { if (!slug.dataset.edited) slug.value = slugify(title.value); });
@@ -277,6 +320,9 @@ function bindBlogAdmin() {
     } catch (error) { showFlash(error.message, 'error'); }
   });
   $('#cancelBlogEdit')?.addEventListener('click', () => { state.editBlog = null; renderAdmin('blogs'); });
+}
+
+function bindAdminBlogActions() {
   $$('[data-edit-blog]').forEach(button => button.addEventListener('click', async () => {
     try { const result = await api('/admin/blogs'); state.editBlog = result.blogs.find(blog => Number(blog.id) === Number(button.dataset.editBlog)); await renderAdmin('blogs'); $('#blog-form-panel')?.scrollIntoView({ behavior: 'smooth' }); }
     catch (error) { showFlash(error.message, 'error'); }
@@ -351,10 +397,11 @@ window.addEventListener('hashchange', renderRoute);
 
 async function init() {
   if (state.token) {
-    try { state.user = (await api('/auth/me')).user; headerMode(true); await renderRoute(); return; }
+    try { state.user = (await api('/auth/me')).user; headerMode(true); await renderRoute(); document.body.classList.remove('auth-pending'); return; }
     catch { sessionStorage.removeItem('myblogs-token'); state.token='';state.user=null; }
   }
   headerMode(false);
   if (!API || API.includes('YOUR-MYBLOGS-API')) showFlashOnLogin('Antes de entrar, configura la URL de la API de Render en frontend/config.js.');
+  document.body.classList.remove('auth-pending');
 }
 init();

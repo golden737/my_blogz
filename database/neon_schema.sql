@@ -87,6 +87,11 @@ INSERT INTO categories (name, slug, description) VALUES
   ('Educación', 'educacion', 'Aprendizaje, estudio y productividad.'),
   ('Viajes', 'viajes', 'Destinos, guías y aventuras.'),
   ('Música', 'musica', 'Canciones, artistas y listas favoritas.'),
+  ('Salud y bienestar', 'salud-bienestar', 'Salud emocional, bienestar y cuidado.'),
+  ('Medio ambiente', 'medio-ambiente', 'Naturaleza, conservación y cambio climático.'),
+  ('Historia y cultura', 'historia-cultura', 'Historia, identidad y expresiones culturales.'),
+  ('Cultura', 'cultura', 'Cultura digital, medios y expresiones sociales.'),
+  ('Negocios', 'negocios', 'Emprendimiento, comercio y actividad económica.'),
   ('Otros', 'otros', 'Ideas y temas variados.')
 ON CONFLICT (slug) DO NOTHING;
 

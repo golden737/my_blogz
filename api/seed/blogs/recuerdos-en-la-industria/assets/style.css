@@ -1,0 +1,23 @@
+:root{--ink:#343b3d;--line:#dedede;--red:#b92736;--paper:#f7f6f3;--sea:#55c2cf;--card:#fffaf1}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background-color:#f5ecdd;background-image:url("books-left.jpg"),url("books-right.jpg");background-position:left top,right top;background-size:26px 2048px,26px 2048px;background-repeat:repeat-y,repeat-y;color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65}
+a{color:#a45421;overflow-wrap:anywhere}
+.platform-bar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:14px clamp(16px,4vw,48px);background:#fff;border-bottom:1px solid var(--line)}
+.platform-brand{font-weight:700;text-decoration:none;color:#222}
+.platform-brand:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:9px}
+.back{color:var(--red);font-size:.92rem;text-decoration:none;font-weight:700}
+.blog-banner{width:min(1100px,calc(100% - 40px));min-height:88px;margin:0 auto;display:flex;align-items:center;gap:24px;padding:16px clamp(18px,4vw,40px);color:#fff;background:#d6c16c;font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:clamp(22px,3vw,32px);text-shadow:0 1px 2px #51462155}
+.blog-back,.search-mark{color:#fff;text-decoration:none;font:24px Arial,sans-serif;line-height:1}.blog-back{margin-top:2px}.search-mark{margin-left:auto}
+.article-card{position:relative;width:min(1100px,calc(100% - 40px));margin:0 auto 0;padding:clamp(24px,4vw,50px) clamp(22px,4vw,50px) 36px;background:var(--card);box-shadow:0 8px 24px #15363b18}
+.article-head{position:relative;margin-bottom:24px}.article-head h1{margin:0 42px 10px 0;color:#201d1d;font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,4vw,40px);line-height:1.2;font-weight:600}.date{margin:0;color:#778184;font-size:13px}.share{position:absolute;right:0;top:4px;color:#6b7779;font-size:22px}
+article>p{margin:0 0 20px;text-align:justify;color:#4b4841}.lead{text-align:left!important;margin:26px 0 24px!important;color:#37332c!important;font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.5;font-weight:700}
+article h2{margin:32px 0 14px;color:#29261f;font:700 21px Georgia,"Times New Roman",serif;line-height:1.35}
+figure{margin:26px auto 34px;text-align:center}figure img{display:block;width:min(100%,620px);height:auto;margin:0 auto;object-fit:contain;border:5px solid #fff;box-shadow:0 3px 12px #0002}figcaption{margin:10px auto 0;color:#736f68;font-size:13px;line-height:1.5}
+.video-link{display:block;width:min(100%,640px);margin:32px auto;background:#f2eee6;border:1px solid #d5d0c6;padding:24px;text-align:center;text-decoration:none;color:#7b4827}.video-link strong{display:block;font-size:1.1rem;margin-bottom:6px}.video-link span{font-size:.9rem;text-decoration:underline}
+.honor{margin-top:26px!important;color:#363229;font-weight:700}
+.references{margin-top:40px}.references h2{margin:0 0 15px;color:#272d2e;font:700 18px Georgia,"Times New Roman",serif}.references p{margin:0 0 14px;color:#6c6962;font-size:14px}.references a{color:#a45421;text-decoration:none}.references a:hover{text-decoration:underline}
+.blogger-attribution{padding-top:80px;text-align:center;color:#fff;font-size:13px}.platform-footer{margin-top:34px;padding:22px clamp(16px,4vw,48px);display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#fff;border-top:1px solid var(--line);color:#626262;font-size:.88rem}.platform-footer a{color:var(--red);text-decoration:none;font-weight:700}
+@media(max-width:600px){.platform-bar{padding:12px 14px}.blog-banner{width:calc(100% - 20px);min-height:74px;padding:12px 14px;gap:12px;font-size:22px}.article-card{width:calc(100% - 20px);margin-top:0;padding:24px 18px 28px}.article-head h1{font-size:30px}.lead{font-size:15px}.platform-footer{padding:16px 14px;font-size:.75rem}}
+
+
