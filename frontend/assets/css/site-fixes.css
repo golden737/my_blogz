@@ -9,8 +9,8 @@
 .flash{position:relative;z-index:5;max-width:1320px;margin:14px auto 0;padding:13px 18px;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
 .flash-success{background:#effaf4;color:#146c43;border-color:#bde5cc}
 .flash-error{background:#fff2f1;color:#a11b28;border-color:#f2c6c3}
-.admin-portal-link{display:inline-block;margin-left:4px;color:inherit;opacity:.16;font-size:9px;text-decoration:none;vertical-align:middle}
-.admin-portal-link:hover,.admin-portal-link:focus-visible{opacity:.75}
+.admin-portal-link{display:inline-block;margin-left:5px;color:#fff;font-size:9px;line-height:1;text-decoration:none;vertical-align:middle;opacity:.9}
+.admin-portal-link:hover,.admin-portal-link:focus-visible{opacity:1;transform:scale(1.25)}
 .login-home-link{width:max-content}
 .admin-search-label{display:block;margin:0 0 7px;color:var(--text);font-size:12px;font-weight:700}
 .admin-search{width:100%;min-height:44px;margin-bottom:14px;padding:10px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}

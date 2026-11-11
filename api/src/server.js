@@ -152,7 +152,8 @@ function coverData(req, blog) {
   const localUrl = localPath
     ? `${apiBase}/api/blog-files/${encodeURIComponent(blog.slug)}/${localPath.split('/').map(encodeURIComponent).join('/')}`
     : '';
-  const coverUrl = blog.cover_image || localUrl;
+  const cacheBustedLocalUrl = localUrl && localPath === 'cover.svg' ? `${localUrl}?v=20261111` : localUrl;
+  const coverUrl = blog.cover_image || cacheBustedLocalUrl;
   return { cover_url: coverUrl, cover_fit: Boolean(localPath?.startsWith('assets/pages/')) };
 }
 
