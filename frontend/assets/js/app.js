@@ -3,7 +3,7 @@ const API = String(CONFIG.apiBaseUrl || '').replace(/\/$/, '');
 const SITE = CONFIG.siteBaseUrl || './';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null, blogs: [], categories: [], search: '', category: '', editBlog: null, editUser: null, scrollTarget: '', adminBlogQuery: '', adminBlogPage: 0 };
+const state = { token: sessionStorage.getItem('myblogs-token') || '', user: null, blogs: [], categories: [], search: '', category: '', editBlog: null, editUser: null, scrollTarget: '', adminBlogQuery: '', adminBlogPage: 0, postLoginRoute: '#/admin', theme: 'light' };
 
 window.addEventListener('message', event => {
   const frame = $('#blogReader iframe');
@@ -38,10 +38,12 @@ function signOut(message = '') {
   sessionStorage.removeItem('myblogs-token');
   state.token = '';
   state.user = null;
-  $('#siteHeader').hidden = true;
-  $('#appPage').hidden = true;
-  $('#loginPage').hidden = false;
-  if (message) showFlashOnLogin(message);
+  state.postLoginRoute = '#/admin';
+  headerMode(false);
+  $('#appPage').hidden = false;
+  $('#loginPage').hidden = true;
+  if (location.hash !== '#/') location.hash = '#/';
+  if (message) showFlash(message, 'error');
 }
 function showFlashOnLogin(message) {
   const error = $('#loginError');
@@ -65,14 +67,23 @@ async function api(path, options = {}) {
   return payload;
 }
 function headerMode(isSignedIn) {
-  $('#siteHeader').hidden = !isSignedIn;
-  $('#loginPage').hidden = isSignedIn;
-  $('#appPage').hidden = !isSignedIn;
+  $('#siteHeader').hidden = false;
+  const onLoginRoute = location.hash.replace(/^#\/?/, '') === 'login';
+  $('#loginPage').hidden = !onLoginRoute || isSignedIn;
+  $('#appPage').hidden = onLoginRoute && !isSignedIn;
   $('#adminNavLink').hidden = !isSignedIn || !roleCanEdit();
+  $('#themeToggle').hidden = !isSignedIn || !roleIsSuper();
+  $('#userName').hidden = !isSignedIn;
+  $('#logoutButton').hidden = !isSignedIn;
   if (isSignedIn) $('#userName').textContent = state.user?.name || '';
 }
-function roleCanEdit() { return ['editor', 'super_admin'].includes(state.user?.role); }
+function roleCanEdit() { return roleIsSuper(); }
 function roleIsSuper() { return state.user?.role === 'super_admin'; }
+function applyTheme(theme) {
+  state.theme = theme === 'dark' ? 'dark' : 'light';
+  if (state.theme === 'dark') document.documentElement.dataset.theme = 'dark';
+  else delete document.documentElement.dataset.theme;
+}
 
 async function login(email, password) {
   const result = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
@@ -81,7 +92,8 @@ async function login(email, password) {
   sessionStorage.setItem('myblogs-token', state.token);
   $('#loginError').hidden = true;
   headerMode(true);
-  location.hash = '#/';
+  location.hash = state.postLoginRoute || '#/admin';
+  state.postLoginRoute = '#/admin';
   await renderRoute();
 }
 
@@ -208,9 +220,23 @@ async function renderAbout() {
 }
 
 async function renderRoute() {
-  if (!state.user) { headerMode(false); return; }
   document.body.classList.remove('local-blog-open');
   const route = location.hash.replace(/^#\/?/, '');
+  headerMode(Boolean(state.user));
+  $('#adminPortalLink').hidden = Boolean(route);
+  if (route === 'login') {
+    if (state.user) { location.hash = state.postLoginRoute || '#/admin'; return; }
+    state.postLoginRoute ||= '#/admin';
+    setActiveNav('');
+    return;
+  }
+  $('#loginPage').hidden = true;
+  $('#appPage').hidden = false;
+  if ((route === 'admin' || route.startsWith('admin/')) && !state.user) {
+    state.postLoginRoute = `#/${route}`;
+    location.hash = '#/login';
+    return;
+  }
   try {
     if (!route || route === '') { setActiveNav('home'); await renderHome(); }
     else if (route === 'about') { setActiveNav('about'); await renderAbout(); }
@@ -391,17 +417,30 @@ $$('.main-nav a').forEach(link => link.addEventListener('click', event => {
     }
   }
 }));
-const theme = localStorage.getItem('myblogs-theme'); if (theme === 'dark') document.documentElement.dataset.theme = 'dark';
-$('#themeToggle').addEventListener('click', () => { const dark = document.documentElement.dataset.theme !== 'dark'; document.documentElement.dataset.theme = dark ? 'dark' : 'light'; localStorage.setItem('myblogs-theme', dark ? 'dark' : 'light'); });
+$('#themeToggle').addEventListener('click', async () => {
+  if (!roleIsSuper()) return;
+  const theme = state.theme === 'dark' ? 'light' : 'dark';
+  const button = $('#themeToggle'); button.disabled = true;
+  try {
+    const result = await api('/admin/site-settings/theme', { method: 'PUT', body: JSON.stringify({ theme }) });
+    applyTheme(result.theme); showFlash(`Tema ${result.theme === 'dark' ? 'oscuro' : 'claro'} aplicado para todos.`);
+  } catch (error) { showFlash(error.message, 'error'); }
+  finally { button.disabled = false; }
+});
+$('#adminPortalLink').addEventListener('click', () => { state.postLoginRoute = '#/admin'; });
 window.addEventListener('hashchange', renderRoute);
 
 async function init() {
+  try { applyTheme((await api('/site-settings/theme')).theme); }
+  catch (error) { console.warn('No se pudo leer el tema público configurado.', error); }
   if (state.token) {
-    try { state.user = (await api('/auth/me')).user; headerMode(true); await renderRoute(); document.body.classList.remove('auth-pending'); return; }
+    try { state.user = (await api('/auth/me')).user; }
     catch { sessionStorage.removeItem('myblogs-token'); state.token='';state.user=null; }
   }
-  headerMode(false);
-  if (!API || API.includes('YOUR-MYBLOGS-API')) showFlashOnLogin('Antes de entrar, configura la URL de la API de Render en frontend/config.js.');
-  document.body.classList.remove('auth-pending');
+  headerMode(Boolean(state.user));
+  if (!API || API.includes('YOUR-MYBLOGS-API')) {
+    showFlash('El catálogo necesita la URL de la API de Render en frontend/config.js.', 'error');
+  }
+  await renderRoute();
 }
 init();

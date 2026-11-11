@@ -15,6 +15,15 @@ CREATE TABLE IF NOT EXISTS admins (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS system_settings (
+  setting_key VARCHAR(80) PRIMARY KEY,
+  setting_value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO system_settings(setting_key,setting_value) VALUES('site_theme','light')
+ON CONFLICT(setting_key) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS categories (
   id BIGSERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,

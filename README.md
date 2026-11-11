@@ -6,7 +6,9 @@ Esta versión sustituye el portal PHP/MySQL por una aplicación HTML/CSS/JavaScr
 
 - Los diez blogs finales que ya preparamos, con sus imágenes, hojas de estilo y páginas.
 - Catálogo con búsqueda instantánea y categorías temáticas.
-- Login y roles `super_admin`, `editor` y `viewer`.
+- Catálogo y lectura públicos; solo la administración requiere iniciar sesión.
+- Acceso discreto al login desde el punto del pie de la portada. La administración conserva los roles `super_admin`, `editor` y `viewer`.
+- Tema claro/oscuro global guardado en Neon; solo el superadministrador puede cambiarlo y el ajuste aplica a todos los visitantes.
 - Panel para crear, editar y eliminar blogs, categorías y usuarios.
 - El nombre del campo **Autor** se coloca en el pie de cada blog al mostrarlo.
 - El panel de administración muestra diez blogs por página y permite filtrarlos mientras escribes.
@@ -46,7 +48,8 @@ Al arrancar, Render agrega las diez fichas empaquetadas y sus archivos a Neon, a
 ## Uso
 
 - Entra a la URL de Render con el correo y contraseña iniciales que configuraste allí. También puedes usar GitHub Pages si su flujo de publicación está habilitado.
-- El API requiere iniciar sesión para mostrar el catálogo y el panel.
+- Cualquier visitante puede abrir el catálogo y leer blogs publicados. Para gestionar contenido, pulsa el pequeño punto junto al copyright en el pie de la portada e inicia sesión con la cuenta de superadministración.
+- El control de tema solo aparece en la sesión de superadministración; el tema seleccionado se comparte con todos los visitantes.
 - Para añadir un blog local, el ZIP debe incluir `index.html` en la raíz. Límite: 20 MB comprimido y 50 MB descomprimido.
 - En **Autor**, escribe el nombre que quieres que aparezca en el pie.
 - Los archivos se guardan en PostgreSQL/Neon, así que reiniciar o volver a desplegar Render no los borra.

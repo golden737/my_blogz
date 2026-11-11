@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="./assets/css/auth.css">
   <link rel="stylesheet" href="./assets/css/app.css">
 </head>
-<body class="auth-pending">
-  <header id="siteHeader" class="site-header" hidden>
+<body>
+  <header id="siteHeader" class="site-header">
     <a class="brand" href="#/" aria-label="My Blogs, inicio"><span class="brand-mark">◧</span><span>My <b>Blogs</b></span></a>
     <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú" aria-expanded="false">☰</button>
     <nav class="main-nav" id="mainNav">
@@ -22,9 +22,9 @@
       <a href="#/admin" data-nav="admin" id="adminNavLink" hidden>Administración</a>
     </nav>
     <div class="header-actions">
-      <button class="icon-btn" id="themeToggle" type="button" aria-label="Cambiar tema claro u oscuro" title="Cambiar tema claro u oscuro">◐</button>
-      <span class="user-chip" id="userName"></span>
-      <button class="text-button" id="logoutButton" type="button">Salir</button>
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Cambiar tema claro u oscuro" title="Cambiar tema claro u oscuro" hidden>◐</button>
+      <span class="user-chip" id="userName" hidden></span>
+      <button class="text-button" id="logoutButton" type="button" hidden>Salir</button>
     </div>
   </header>
 
@@ -48,11 +48,12 @@
             <label>Contraseña<input name="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña"></label>
             <button class="button button-wide" type="submit">Iniciar sesión <span aria-hidden="true">→</span></button>
           </form>
+          <a class="text-button centered login-home-link" href="#/">Volver al catálogo</a>
         </div>
       </div>
     </section>
 
-    <section id="appPage" hidden>
+    <section id="appPage">
       <div id="flashMessage" class="flash" role="status" hidden></div>
       <div id="viewRoot"></div>
     </section>
@@ -62,7 +63,7 @@
     <div class="footer-inner">
       <span class="brand brand-footer"><span class="brand-mark">◧</span><span>My <b>Blogs</b></span></span>
       <p>Ideas · Experiencias · Aprendizaje</p>
-      <small>© 2026 My Blogs</small>
+      <small>© 2026 My Blogs <a id="adminPortalLink" class="admin-portal-link" href="#/login" aria-label="Acceso privado" hidden>·</a></small>
     </div>
   </footer>
   <script src="./config.js"></script>

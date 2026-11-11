@@ -248,7 +248,23 @@ app.post('/api/auth/login', loginLimiter, asyncRoute(async (req, res) => {
 
 app.get('/api/auth/me', authenticate, (req, res) => res.json({ user: req.user }));
 
-app.get('/api/categories', authenticate, asyncRoute(async (_req, res) => {
+app.get('/api/site-settings/theme', asyncRoute(async (_req, res) => {
+  const result = await pool.query("SELECT setting_value FROM system_settings WHERE setting_key='site_theme'");
+  res.json({ theme: result.rows[0]?.setting_value === 'dark' ? 'dark' : 'light' });
+}));
+
+app.put('/api/admin/site-settings/theme', authenticate, requireRole('super_admin'), asyncRoute(async (req, res) => {
+  const theme = String(req.body?.theme || '');
+  if (!['light', 'dark'].includes(theme)) throw fail(400, 'El tema debe ser claro u oscuro.');
+  await pool.query(
+    `INSERT INTO system_settings(setting_key,setting_value,updated_at) VALUES('site_theme',$1,NOW())
+     ON CONFLICT(setting_key) DO UPDATE SET setting_value=EXCLUDED.setting_value,updated_at=NOW()`,
+    [theme]
+  );
+  res.json({ theme });
+}));
+
+app.get('/api/categories', asyncRoute(async (_req, res) => {
   const result = await pool.query(`
     SELECT c.id,c.name,c.slug,c.description,COUNT(bc.blog_id)::int AS blog_count
     FROM categories c LEFT JOIN blog_categories bc ON bc.category_id=c.id
@@ -257,7 +273,7 @@ app.get('/api/categories', authenticate, asyncRoute(async (_req, res) => {
   res.json({ categories: result.rows });
 }));
 
-app.get('/api/blogs', authenticate, asyncRoute(async (req, res) => {
+app.get('/api/blogs', asyncRoute(async (req, res) => {
   const search = String(req.query.q || '').trim();
   const categoryId = Number(req.query.category || 0);
   const clauses = ["b.status='published'"];
@@ -282,7 +298,7 @@ app.get('/api/blogs', authenticate, asyncRoute(async (req, res) => {
   res.json({ blogs: blogs.map(blog => ({ ...blog, ...coverData(req, blog) })) });
 }));
 
-app.get('/api/blogs/:slug', authenticate, asyncRoute(async (req, res) => {
+app.get('/api/blogs/:slug', asyncRoute(async (req, res) => {
   if (!validSlug(req.params.slug)) throw fail(400, 'Slug no válido.');
   const result = await blogRows(`
     SELECT b.id,b.title,b.slug,b.description,b.author_name,b.source_platform,b.original_url,
@@ -297,7 +313,7 @@ app.get('/api/blogs/:slug', authenticate, asyncRoute(async (req, res) => {
   res.json({ blog: { ...result[0], ...coverData(req, result[0]) } });
 }));
 
-app.get('/api/blogs/:slug/page', authenticate, asyncRoute(async (req, res) => {
+app.get('/api/blogs/:slug/page', asyncRoute(async (req, res) => {
   if (!validSlug(req.params.slug)) throw fail(400, 'Slug no válido.');
   const result = await pool.query(
     `SELECT b.id,b.slug,b.title,b.author_name,b.status,f.content
@@ -403,7 +419,7 @@ app.get(/^\/api\/blog-files\/([^/]+)\/(.+)$/, asyncRoute(async (req, res) => {
   }).send(file.content);
 }));
 
-app.get('/api/admin/blogs', authenticate, requireRole('editor', 'super_admin'), asyncRoute(async (_req, res) => {
+app.get('/api/admin/blogs', authenticate, requireRole('super_admin'), asyncRoute(async (_req, res) => {
   const blogs = await blogRows(`
     SELECT b.id,b.title,b.slug,b.description,b.author_name,b.source_platform,b.original_url,b.integration_mode,
       b.cover_image,b.status,b.is_featured,b.published_at,
@@ -414,7 +430,7 @@ app.get('/api/admin/blogs', authenticate, requireRole('editor', 'super_admin'), 
   res.json({ blogs });
 }));
 
-app.post('/api/admin/blogs', authenticate, requireRole('editor', 'super_admin'), upload.single('blog_zip'), asyncRoute(async (req, res) => {
+app.post('/api/admin/blogs', authenticate, requireRole('super_admin'), upload.single('blog_zip'), asyncRoute(async (req, res) => {
   const body = req.body || {};
   const title = String(body.title || '').trim();
   const slug = String(body.slug || '').trim();
@@ -448,7 +464,7 @@ app.post('/api/admin/blogs', authenticate, requireRole('editor', 'super_admin'),
   } finally { client.release(); }
 }));
 
-app.put('/api/admin/blogs/:id', authenticate, requireRole('editor','super_admin'), upload.single('blog_zip'), asyncRoute(async (req, res) => {
+app.put('/api/admin/blogs/:id', authenticate, requireRole('super_admin'), upload.single('blog_zip'), asyncRoute(async (req, res) => {
   const id = Number(req.params.id);
   const body = req.body || {};
   const title = String(body.title || '').trim();
@@ -484,14 +500,14 @@ app.put('/api/admin/blogs/:id', authenticate, requireRole('editor','super_admin'
   finally{client.release()}
 }));
 
-app.delete('/api/admin/blogs/:id', authenticate, requireRole('editor','super_admin'), asyncRoute(async (req,res)=>{
+app.delete('/api/admin/blogs/:id', authenticate, requireRole('super_admin'), asyncRoute(async (req,res)=>{
   const id=Number(req.params.id);if(!Number.isSafeInteger(id)||id<1)throw fail(400,'Blog no válido.');
   const result=await pool.query('DELETE FROM blogs WHERE id=$1 RETURNING id',[id]);
   if(!result.rows.length)throw fail(404,'Blog no encontrado.');
   res.json({message:'Blog eliminado.'});
 }));
 
-app.post('/api/admin/categories',authenticate,requireRole('editor','super_admin'),asyncRoute(async(req,res)=>{
+app.post('/api/admin/categories',authenticate,requireRole('super_admin'),asyncRoute(async(req,res)=>{
   const name=String(req.body?.name||'').trim();
   const slug=String(req.body?.slug||'').trim().toLowerCase();
   if(!name||!validSlug(slug))throw fail(400,'Escribe un nombre y slug válidos.');
@@ -499,7 +515,7 @@ app.post('/api/admin/categories',authenticate,requireRole('editor','super_admin'
   catch(error){if(error.code==='23505')throw fail(409,'Esa categoría ya existe.');throw error}
 }));
 
-app.delete('/api/admin/categories/:id',authenticate,requireRole('editor','super_admin'),asyncRoute(async(req,res)=>{
+app.delete('/api/admin/categories/:id',authenticate,requireRole('super_admin'),asyncRoute(async(req,res)=>{
   const id=Number(req.params.id);if(!Number.isSafeInteger(id)||id<1)throw fail(400,'Categoría no válida.');
   const result=await pool.query('DELETE FROM categories WHERE id=$1 RETURNING id',[id]);if(!result.rows.length)throw fail(404,'Categoría no encontrada.');res.json({message:'Categoría eliminada.'});
 }));

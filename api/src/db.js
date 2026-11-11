@@ -23,6 +23,11 @@ export async function initializeDatabase() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS system_settings (
+      setting_key VARCHAR(80) PRIMARY KEY,
+      setting_value TEXT NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
     CREATE TABLE IF NOT EXISTS categories (
       id BIGSERIAL PRIMARY KEY,
       name VARCHAR(100) NOT NULL,
@@ -78,6 +83,11 @@ export async function initializeDatabase() {
       UNIQUE(blog_id, slug)
     );
   `);
+
+  await pool.query(
+    `INSERT INTO system_settings(setting_key,setting_value) VALUES('site_theme','light')
+     ON CONFLICT(setting_key) DO NOTHING`
+  );
 
   // Bring forward databases created by earlier releases. CREATE TABLE IF NOT
   // EXISTS does not add columns to an existing table, and blog updates rely on
